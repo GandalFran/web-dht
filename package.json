@@ -1,0 +1,23 @@
+{
+  "name": "dht",
+  "version": "1.0.0",
+  "description": "file transfer DHT implementation for USAL's 2020 SSDD course",
+  "main": "index.js",
+  "scripts": {
+    "init": "npm install",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GandalFran/dht.git"
+  },
+  "author": "@Gandalfran @Hectorssb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GandalFran/dht/issues"
+  },
+  "homepage": "https://github.com/GandalFran/dht#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
