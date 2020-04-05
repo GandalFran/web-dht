@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@mdi/font": "^5.0.45",
+    "@mdi/js": "^5.0.45",
     "core-js": "^3.6.4",
     "node-sass": "^4.13.1",
     "vue": "^2.6.11",

@@ -4,6 +4,7 @@ import Router from 'vue-router'
 //Import components
 import Dash from "./components/dash"
 import FilesTreatment from "./components/filesTreatment"
+import SearchingFiles from "./components/searchingFiles"
 
 Vue.use(Router)
 
@@ -24,6 +25,11 @@ var router = new Router({
                     path: '/filesTreatment',
                     name: 'filesTreatment',
                     component: FilesTreatment
+                },
+                {
+                    path: '/searchingFiles',
+                    name: 'searchingFiles',
+                    component: SearchingFiles
                 }
             ]
         }
