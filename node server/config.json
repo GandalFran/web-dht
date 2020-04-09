@@ -1,0 +1,10 @@
+{
+    "log": "DEBUG",
+    "http": {
+        "port": 80,
+        "addr": "localhost"
+    },
+    "dht": {
+
+    }
+}
