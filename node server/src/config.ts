@@ -12,6 +12,8 @@ import { Log } from "./log";
 
 
 const CONFIG_FILE = "config.json";
+const DEFAULT_CONFIG_FILE = "default-config.json";
+
 
 export class DHTConfig {
     constructor() {
@@ -52,13 +54,18 @@ export class Config{
 	public static init(): void {
         const config: Config = new Config();
         const configPath = Path.resolve(__dirname, "..", "..", CONFIG_FILE);
-
-        let jsonConfig: any = {};
+        const defaultConfigPath = Path.resolve(__dirname, "..", "..", DEFAULT_CONFIG_FILE);
+ 
+        let jsonConfig: any = null;
         try {
-            let rawJson = FileSystem.readFileSync(configPath).toString();
-            jsonConfig = JSON.parse(rawJson);
+            if (FileSystem.existsSync(configPath)) {
+                jsonConfig = JSON.parse(FileSystem.readFileSync(configPath).toString());
+            } else {
+                jsonConfig = JSON.parse(FileSystem.readFileSync(defaultConfigPath).toString());
+            }
         } catch (e) {
-            Log.error("Invalid configuration", e);
+            console.log(`Invalid configuration: ${JSON.stringify(e)}`);
+            return;
         }
 
         config.log = jsonConfig.log;

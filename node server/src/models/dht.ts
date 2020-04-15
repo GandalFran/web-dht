@@ -4,11 +4,6 @@
 
 "use strict";
 
-
-import * as Libp2p from 'libp2p';
-import * as KadDHT from 'libp2p-kad-dht';
-
-
 export class DHT {
 
 
@@ -20,20 +15,6 @@ export class DHT {
 	}
 
 	public async init(){
-		this.node = await Libp2p.create({
-		  modules: {
-		    transport: [ TCP ],
-		    streamMuxer: [ Mplex ],
-		    connEncryption: [ SECIO ],
-		    // this module will handle the peer and content routing
-		    dht: KadDHT
-		  },
-		  config: {
-		    dht: {
-		      enabled: true
-		    }
-		  }
-		})
 	}
 
 

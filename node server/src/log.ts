@@ -74,7 +74,7 @@ export class Log {
 
     public static error(msg: string, e: Error) {
         if(Log.logLevel <= LogLevel.ERROR){
-            if(! e){
+            if(e){
                 Log.log(`[ERROR] ${msg}\nException ${e.name}: ${e.message} \n ${e.stack}`);
             }else{
                 Log.log(`[ERROR] ${msg}`);

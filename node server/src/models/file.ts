@@ -12,7 +12,4 @@ export class file {
 		
 	}
 
-	public splitInChunks(): Chunck[]{
-		return new Chunk [] {("hola")};
-	}
 }
