@@ -89,3 +89,6 @@ typings/
 
 # build folder
 node server/.build
+
+# config json
+config.json

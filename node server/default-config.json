@@ -1,20 +1,10 @@
 {
-    "log": "ERROR",
+    "log": "NONE",
     "http": {
         "port": 80,
         "addr": "localhost"
     },
-    "https": {
-        "port": 445,
-        "bind_address": "localhost",
-        "certificate_file": "",
-        "private_key_file": ""
-    },
-    "database": {
-        "host": "localhost",
-        "port": 5432,
-        "user": "postgre",
-        "password": "1234",
-        "database": "peopleAnalytics"
+    "dht": {
+
     }
 }
