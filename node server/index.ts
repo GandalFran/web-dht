@@ -17,4 +17,3 @@ Log.setLogLevel(Config.getInstance().log);
 
 // start application
 DHTApplication.getInstance().start();
-

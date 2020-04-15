@@ -4,9 +4,15 @@
 
 "use strict";
 
+import { Chunk } from "./chunk"
+
 export class file {
 
 	constructor(){
 		
+	}
+
+	public splitInChunks(): Chunck[]{
+		return new Chunk [] {("hola")};
 	}
 }
