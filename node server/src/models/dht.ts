@@ -4,9 +4,25 @@
 
 "use strict";
 
-export class dht {
+export class DHT {
+
+
+	private node: any;
+
 
 	constructor(){
 		
+	}
+
+	public async init(){
+	}
+
+
+	public put(){
+
+	}
+
+	public get(){
+
 	}
 }

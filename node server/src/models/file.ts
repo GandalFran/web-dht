@@ -4,9 +4,12 @@
 
 "use strict";
 
+import { Chunk } from "./chunk"
+
 export class file {
 
 	constructor(){
 		
 	}
+
 }

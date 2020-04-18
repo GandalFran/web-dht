@@ -5,7 +5,7 @@
 "use strict";
 
 import * as Express from "express";
-import { dht } from "../models/dht";
+import { DHT } from "../models/dht";
 
 
 export class DHTController{
