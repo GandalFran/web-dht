@@ -21,11 +21,6 @@
   },
   "homepage": "https://github.com/GandalFran/dht#readme",
   "dependencies": {
-<<<<<<< HEAD
-    "@types/express": "^4.17.5",
-    "@types/ws": "^7.2.4",
-=======
->>>>>>> master
     "express": "^4.17.1",
     "http": "0.0.1-security",
     "libp2p": "^0.27.5",
