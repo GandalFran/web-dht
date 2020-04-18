@@ -3,6 +3,31 @@
     <v-container grid-list-xl text-xs-center>
       <v-layout row wrap>
         <v-flex xs12>
+          <v-file-input
+            label="Click here to select file for upload"
+            outlined
+            v-model="file"
+          >
+          </v-file-input>
+        </v-flex>
+
+        <v-flex xs12>
+          <v-btn
+            id="okFileButton"
+            class="futura"
+            text
+            color="#0f1c41"
+            @click="onSubmit()"
+            
+            left>
+            Upload File
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <v-container grid-list-xl text-xs-center>
+      <v-layout row wrap>
+        <v-flex xs12>
           <v-card class="mx-auto">
             <v-card-title color="#0f1c41">
               Downloading Files
@@ -91,11 +116,17 @@
     mdiDelete,
   } from '@mdi/js'
 
+  import axios from 'axios';
+
 
   export default {
     data () {
       return {
         search: '',
+        //upload image data
+        file: null,
+        fileErrorMessage:"",
+        fileErrorFlag: false,
         icons: {
           mdiDelete,
         },
@@ -136,7 +167,26 @@
     methods: {
       onButtonClick(item) {
         console.log('click on ' + item.nombre)
+      },
+      async onSubmit(){ 
+            var urlUpload = "http://localhost:8125/upload";
+            const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
+            formData.append('file',this.file);
+
+            console.log(this.file);
+            try {
+                await axios.post(urlUpload, formData);
+                location.reload(true);
+            } catch (err) {
+                console.log(err);
+            }
       }
     }
   }
 </script>
+
+<style>
+#uploadFileButtomIcon {
+    margin-left: 10px;
+}
+</style>
