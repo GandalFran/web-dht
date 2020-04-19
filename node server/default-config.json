@@ -5,6 +5,7 @@
         "addr": "localhost"
     },
     "dht": {
-
+    	"idIface": "wifi0",
+    	"bootstrapPeer": "localhost"
     }
 }

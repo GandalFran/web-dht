@@ -16,7 +16,13 @@ const DEFAULT_CONFIG_FILE = "default-config.json";
 
 
 export class DHTConfig {
+
+    public idIface: string;
+    public bootstrapPeer: string;
+
     constructor() {
+        this.idIface = "";
+        this.bootstrapPeer = "";
     }
 }
 
@@ -77,7 +83,9 @@ export class Config{
         }
 
         config.dht = new DHTConfig();
-        if (typeof jsonConfig === "object" && typeof jsonConfig.database === "object") {
+        if (typeof jsonConfig === "object" && typeof jsonConfig.dht === "object") {
+            config.dht.idIface = jsonConfig.dht.idIface;
+            config.dht.bootstrapPeer = jsonConfig.dht.bootstrapPeer;
         }
 
         Config.singletonInstance = config;

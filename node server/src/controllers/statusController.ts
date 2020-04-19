@@ -7,7 +7,7 @@
 import * as Express from "express";
 
 import { Config } from "../config"
-import { RESPONSE_STATUS_OK, CONTENT_APPLICATION_JSON, CONTENT_TEXT_PLAIN } from "../util/http"
+import { STATUS_OK, CONTENT_APPLICATION_JSON, CONTENT_TEXT_PLAIN } from "../util/http"
 
 
 export class StatusController{
@@ -18,7 +18,7 @@ export class StatusController{
     }
 
     public async status(request: Express.Request, response: Express.Response) {
-    	response.status(RESPONSE_STATUS_OK);
+    	response.status(STATUS_OK);
     	response.contentType(CONTENT_TEXT_PLAIN);
         response.json({
         	"status": "running"
@@ -26,7 +26,7 @@ export class StatusController{
     }
 
     public async configuration(request: Express.Request, response: Express.Response) {
-    	response.status(RESPONSE_STATUS_OK);
+    	response.status(STATUS_OK);
     	response.contentType(CONTENT_APPLICATION_JSON);
         response.json({
         	"configuration": JSON.stringify(Config.getInstance())

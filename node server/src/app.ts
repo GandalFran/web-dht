@@ -13,6 +13,8 @@ import { Log } from "./log";
 import { Config } from "./config";
 import { DHTController } from "./controllers/dhtController";
 import { StatusController } from "./controllers/statusController";
+import { BootstrapStartController } from "./controllers/bootstrapStartController";
+
 
 export class DHTApplication {
 
@@ -43,9 +45,11 @@ export class DHTApplication {
     private registerControllers() {
         const dhtController = new DHTController();
         const statusController = new StatusController();
+        const bootstarpStartController = new BootstrapStartController();
 
         dhtController.registerController(this.application);
         statusController.registerController(this.application);
+        bootstarpStartController.registerController(this.application);
     }
 
     
