@@ -4,6 +4,7 @@
       <v-layout row wrap>
         <v-flex xs12>
           <v-file-input
+            type = "file"
             label="Click here to select file for upload"
             outlined
             v-model="file"
@@ -116,8 +117,7 @@
     mdiDelete,
   } from '@mdi/js'
 
-  import axios from 'axios';
-
+  //import axios from 'axios';
 
   export default {
     data () {
@@ -169,16 +169,14 @@
         console.log('click on ' + item.nombre)
       },
       async onSubmit(){ 
-            var urlUpload = "http://localhost:8125/upload";
+            const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
+            req.open('POST',"http://localhost:80/file/create",false);
+            req.send(formData);
 
-            console.log(this.file);
-            try {
-                await axios.post(urlUpload, formData);
-                location.reload(true);
-            } catch (err) {
-                console.log(err);
+            if (req.status === 200) {
+              console.log(req.response);
             }
       }
     }

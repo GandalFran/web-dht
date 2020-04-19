@@ -8,18 +8,23 @@ import * as FS from "fs";
 import * as Path from "path";
 import * as HTTP from "http";
 import Express from "express";
+import Cors from "cors";
+import CookieParser from 'cookie-parser';
+import * as BodyParser from 'body-parser';
 
 import { Log } from "./log";
 import { Config } from "./config";
 import { DHTController } from "./controllers/dhtController";
 import { StatusController } from "./controllers/statusController";
 import { BootstrapStartController } from "./controllers/bootstrapStartController";
+import { FileController } from "./controllers/fileController";
+
+import {HTTP_COOKIE_SECRET} from "./util/http";
 
 
 export class DHTApplication {
 
     private static singletonInstance : DHTApplication = null;
-
     public static getInstance(): DHTApplication {
         if (! DHTApplication.singletonInstance) {
             DHTApplication.singletonInstance = new DHTApplication();
@@ -31,6 +36,8 @@ export class DHTApplication {
 
     constructor() {
         this.application = Express();
+        this.application.use(Cors());
+        this.configureParsers();
         this.registerControllers();
     }
 
@@ -45,11 +52,21 @@ export class DHTApplication {
     private registerControllers() {
         const dhtController = new DHTController();
         const statusController = new StatusController();
+        const fileController = new FileController();
         const bootstarpStartController = new BootstrapStartController();
 
         dhtController.registerController(this.application);
         statusController.registerController(this.application);
         bootstarpStartController.registerController(this.application);
+        fileController.registerController(this.application);
+    }
+
+    private configureParsers() {
+        this.application.use(BodyParser.raw());
+        this.application.use(BodyParser.text());
+        this.application.use(CookieParser(HTTP_COOKIE_SECRET));
+        this.application.use(BodyParser.json({ limit: "300mb" }));
+        this.application.use(BodyParser.urlencoded({ limit: "300mb", extended: true, parameterLimit: 1000000}));
     }
 
     

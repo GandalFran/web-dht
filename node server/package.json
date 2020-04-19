@@ -21,7 +21,16 @@
   },
   "homepage": "https://github.com/GandalFran/dht#readme",
   "dependencies": {
+    "@types/body-parser": "^1.19.0",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.6",
+    "@types/formidable": "^1.0.31",
+    "@types/webtorrent": "^0.107.2",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "formidable": "^1.2.2",
     "http": "0.0.1-security",
     "libp2p": "^0.27.5",
     "libp2p-kad-dht": "^0.18.6",
@@ -29,6 +38,7 @@
     "libp2p-secio": "^0.12.4",
     "libp2p-tcp": "^0.14.4",
     "peer-info": "^0.17.5",
+    "webtorrent": "^0.108.1",
     "ws": "^7.2.3"
   },
   "devDependencies": {
