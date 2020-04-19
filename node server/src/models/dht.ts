@@ -4,81 +4,102 @@
 
 "use strict";
 
-import * as OS from 'os';
-
-const Libp2p = require('libp2p')
-const TCP = require('libp2p-tcp');
-const Mplex = require('libp2p-mplex')
-const SECIO = require('libp2p-secio')
-const PeerInfo = require('peer-info')
-const KadDHT = require('libp2p-kad-dht')
+import Libp2p = require('libp2p');
+import TCP = require('libp2p-tcp');
+import Mplex = require('libp2p-mplex');
+import SECIO = require('libp2p-secio');
+import PeerInfo = require('peer-info');
+import KadDHT = require('libp2p-kad-dht');
 
 
-import { Log } from '../log'
-import { Config } from '../config'
+import { Log } from '../log';
+import { Config } from '../config';
+import { Chunk } from '../models/chunk';
 
 
 export class DHT {
 
+    private static singletonInstance: DHT = null;
+
+	public static getInstance(): DHT {
+		if (! DHT.singletonInstance) {
+			DHT.singletonInstance = new DHT();
+            DHT.singletonInstance.init();
+        }
+        return DHT.singletonInstance;
+	}
+
 	private node: any;
 	private peerInfo: any;
+	private peers: any [];
 
 	constructor(){
-		
+		this.node = null;	
+		this.peerInfo = null;
+		this.peers = new Array();
 	}
 
-	public async init(){
-		/*
-		Log.info(`starting`);
+	private async init(){
+		await this.initPeerInfo();
+		await this.initDhtNode();
+		Log.info(`[DHT] dht started`);
+	}
+
+	private async initPeerInfo(){
+		this.peerInfo = await PeerInfo.create();
+		this.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
+		Log.info(`[DHT] assigned peer id ${this.peerInfo.id}`);
+	}
+
+	private async initDhtNode(){
 		try{
-			Log.debug(`instancing peerInfo`);
-			this.peerInfo = await PeerInfo.create(this.generateId());
-			Log.debug(`adding new ip`);
-			this.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
-			Log.debug(`creating node with libp2p`);
-
-			const opts = {
-				modules: {
-					transport: [TCP],
-					streamMuxer: [Mplex],
-					connEncryption: [SECIO],
-					dht: KadDHT
-				},
-				config: {
-					dht: {
-						enabled: true
-					}
-				}
-			};
-
-			this.node = await Libp2p.create({this.peerInfo, opts});
-			Log.debug(`starting node with libp2p`);
+			const peerInfo = this.peerInfo;
+			this.node = await Libp2p.create({
+			    peerInfo,
+			    modules: {
+			      transport: [TCP],
+			      streamMuxer: [Mplex],
+			      connEncryption: [SECIO],
+			      dht: KadDHT
+			    },
+			    config: {
+			      dht: {
+			        enabled: true
+			      }
+			    }
+			  })
 			await this.node.start()
 		}catch(e){
-			Log.error("[DHT] init ", e);
-		}*/
+			Log.error('[DHT] excepccion occured on start', e);
+		}
 	}
 
-	public generateId(){
-		const ifaces = OS.networkInterfaces();
-		const iface = ifaces[Config.getInstance().dht.idIface];
+	public registerPeer(peer:any){
+		Log.info(`[DHT] registering peer with id ${peer.id}`);
+		let isRegistered = false;
+		this.peers.forEach((item, index) => {
+			if(item.id === peer.id)
+				isRegistered = true;
+		});
 
-		let mac = null;
-		if(iface !== undefined){
-			mac = iface[0].mac;
-			Log.info(`Using the iface ${Config.getInstance().dht.idIface} MAC address ${mac} as id`);
-		}else{
-			Log.error(`The iface ${Config.getInstance().dht.idIface} was not found, looking for other ifaces`, null);
-			
-			let availableIfaces: any = [];
-			Object.keys(ifaces).forEach(aIface => {
-				availableIfaces.push(aIface);
-			});
-
-			const selectedIface = availableIfaces[0];
-			mac = ifaces[selectedIface][0].mac;
-			Log.info(`Using the iface ${selectedIface} MAC address ${mac} as id`);
+		if(! isRegistered){
+			this.node.dial(peer.peerInfo);
+			this.peers.push(peer.peerInfo);
 		}
-		return mac;
+	}
+
+	public put(chunk: Chunk){
+		Log.info(`[DHT] put CID ${chunk.cid}`);
+		this.node.dht.put(chunk.cid, chunk.value);
+	}
+
+	public async get(chunk: Chunk): Promise<Buffer>{
+		Log.info(`[DHT] get CID ${chunk.cid}`);
+		const value = await this.node.dht.get(chunk.cid);
+		return value;
+	}
+
+	public cid(value: Buffer): Buffer{
+		return this.node.dht.get.bufferToKey(value);
 	}
 }

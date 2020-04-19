@@ -68,6 +68,5 @@ export class DHTApplication {
         this.application.use(BodyParser.json({ limit: "300mb" }));
         this.application.use(BodyParser.urlencoded({ limit: "300mb", extended: true, parameterLimit: 1000000}));
     }
-
     
 }

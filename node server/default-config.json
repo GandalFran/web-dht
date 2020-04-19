@@ -5,7 +5,8 @@
         "addr": "localhost"
     },
     "dht": {
-    	"idIface": "wifi0",
+    	"chunckSize": 6400,
+    	"minChunckSize": 6400,
     	"bootstrapPeer": "localhost"
     }
 }

@@ -6,12 +6,10 @@
 
 import * as Express from "express";
 import WebTorrent from "webtorrent";
-import { DHT } from "../models/dht";
 import { IncomingForm } from 'formidable';
 
 export class FileController{
 
-    private model: DHT;
     private torrent: any;
 
 	constructor(){

@@ -1,29 +1,27 @@
 
+import { DHT } from "../models/dht";
 
 export class Chunk {
 
-	public hash:string;
-	public contentPath:string;
-	private cachedConent:string;
+	public cid:Buffer;
+	public value:Buffer;
 
-	constructor(content:string){
-		this.contentPath = content;
-		this.cachedConent = content;
-		this.hash = this.calculateHash();
+	constructor(){
+		this.cid = null;
+		this.value = null;
 	}
 
-	public content(): string{
-		if(!this.cachedConent){
-			this.load();
-		}
-		return this.cachedConent;
+	public static fidnByBuffer(value: Buffer): Chunk{
+		const chunk: Chunk = new Chunk();
+		chunk.value = value;
+		chunk.cid = DHT.getInstance().cid(value);
+		return chunk;
 	}
 
-	private load(): void{
-		this.cachedConent = "content loaded from contentPath";
-	}
-
-	private calculateHash():string{
-		return "a hash";
+	public static async findByCid(cid: Buffer): Promise<Chunk>{
+		const chunk: Chunk = new Chunk();
+		chunk.cid = cid;
+		chunk.value = await DHT.getInstance().get(chunk);
+		return chunk;
 	}
 }

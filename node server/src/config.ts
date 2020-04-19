@@ -17,11 +17,13 @@ const DEFAULT_CONFIG_FILE = "default-config.json";
 
 export class DHTConfig {
 
-    public idIface: string;
+    public chunkSize: number;
+    public minChunkSize: number;
     public bootstrapPeer: string;
 
     constructor() {
-        this.idIface = "";
+        this.chunkSize = 0;
+        this.minChunkSize = 0;
         this.bootstrapPeer = "";
     }
 }
@@ -84,7 +86,8 @@ export class Config{
 
         config.dht = new DHTConfig();
         if (typeof jsonConfig === "object" && typeof jsonConfig.dht === "object") {
-            config.dht.idIface = jsonConfig.dht.idIface;
+            config.dht.chunkSize = jsonConfig.dht.chunkSize;
+            config.dht.minChunkSize = jsonConfig.dht.minChunkSize;
             config.dht.bootstrapPeer = jsonConfig.dht.bootstrapPeer;
         }
 

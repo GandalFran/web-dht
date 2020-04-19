@@ -16,13 +16,5 @@ CrashGuard.start();
 // set log level
 Log.setLogLevel(Config.getInstance().log);
 
-//test -> TODO delete
-import { DHT } from "./src/models/dht";
-
-const x = new DHT();
-x.init();
-
-//end test
-
 // start application
 DHTApplication.getInstance().start();
