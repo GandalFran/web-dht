@@ -7,7 +7,7 @@
     "clean": "rimraf ./.build/*",
     "build": "npm-run-all clean _build-ts",
     "start": "node ./.build/index.js",
-    "onegaisimasu": "npm-run-all _build-ts start",
+    "kudasai": "npm-run-all _build-ts start",
     "nodevmon": "nodemon --watch src -e ts --exec npm-run-all build start",
     "_build-ts": "tsc"
   },

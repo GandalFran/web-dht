@@ -17,9 +17,8 @@ import { Config } from "./config";
 import { DHTController } from "./controllers/dhtController";
 import { StatusController } from "./controllers/statusController";
 import { BootstrapStartController } from "./controllers/bootstrapStartController";
-import { FileController } from "./controllers/fileController";
-
-import {HTTP_COOKIE_SECRET} from "./util/http";
+import { TorrentFileController } from "./controllers/torrentFileController";
+import { HTTP_COOKIE_SECRET } from "./util/http";
 
 
 export class DHTApplication {
@@ -52,13 +51,13 @@ export class DHTApplication {
     private registerControllers() {
         const dhtController = new DHTController();
         const statusController = new StatusController();
-        const fileController = new FileController();
+        const torrentFileController = new TorrentFileController();
         const bootstarpStartController = new BootstrapStartController();
 
         dhtController.registerController(this.application);
         statusController.registerController(this.application);
+        torrentFileController.registerController(this.application);
         bootstarpStartController.registerController(this.application);
-        fileController.registerController(this.application);
     }
 
     private configureParsers() {
