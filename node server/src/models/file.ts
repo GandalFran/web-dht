@@ -7,13 +7,14 @@
 import { Chunk } from "./chunk"
 import * as FileSystem from "fs";
 
-export class file {
+export class File {
 
 	public path:string;
 	public content:Buffer;
 
-	constructor(){
-		
+	constructor(path:string){
+		this.path = path;
+		this.content = null;
 	}
 
 	public load(){
@@ -21,12 +22,15 @@ export class file {
 	}
 
 	public split(): Chunk []{
+		if(this.content === null)
+			this.load();
+
 		const chunks = new Array();
 		// TODO
 		return chunks;
 	}
 
-	public static join(){
+	public join(path:string){
 		// TODO
 	}
 }
