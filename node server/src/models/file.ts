@@ -84,13 +84,25 @@ export class Torrent extends File{
 		return null;
 	}
 
-	public static buildFileFromTorrent(torrent: Torrent): File {
-
+	public static buildFileFromTorrent(torrent: Torrent): File [] {
 		torrent.read();
-		const torrentInfo = ParseTorrent(torrent.content);
+		const parsedTorrent = ParseTorrent(torrent.content);
+		const torrentFiles = parsedTorrent.files;
 
-		Log.debug(`[TORRENT] parsed file ${torrent.path} with information ${torrentInfo}`);
+		let file:File = null;
+		const files: File [] = [];
+		parsedTorrent.files.forEach( torrentFileInfo => {
+			let chunk:Chunk = null;
+			const chunks:Chunk = [];
+			torrentInfo.pieces.forEach(cid => {
+				chunk = Chunk.buildWithCid(cid);
+				chunks.push(chunk);
+			});	
 
-		return null;
+			file = File.buildWithChunks(torrentInfo.name, chunks);
+			files.push(file);
+		});
+
+		return files;
 	}
 }
