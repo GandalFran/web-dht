@@ -19,7 +19,8 @@ import { Chunk } from '../models/chunk';
 
 export class DHT {
 
-    private static singletonInstance: DHT = null;
+	private static singletonInstance: DHT = null;
+	private arrayPromises : any[];
 
 	public static getInstance(): DHT {
 		if (! DHT.singletonInstance) {
@@ -39,39 +40,65 @@ export class DHT {
 		this.peers = new Array();
 	}
 
-	private async init(){
-		await this.initPeerInfo();
-		await this.initDhtNode();
+	private init(){
+		this.arrayPromises.push(this.initPeerInfo());
+		this.arrayPromises.push(this.initDhtNode());
+
+		Promise.all(this.arrayPromises)
+			.then(() => {
+				//Here all have been done right
+				console.log("Todo OK :D");
+			})
+			.catch(() => {
+				//Here some have functions have errors
+				console.log("Algo ha ido mal D:");
+			});
+		//await this.initPeerInfo();
+		//await this.initDhtNode();
 		Log.info(`[DHT] dht started`);
 	}
 
-	private async initPeerInfo(){
-		this.peerInfo = await PeerInfo.create();
-		this.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
-		Log.info(`[DHT] assigned peer id ${this.peerInfo.id}`);
+	private initPeerInfo(){
+		return new Promise((resolve,reject) => {
+			//Make neccesary start things and if it goes right resolve() else reject()
+			this.peerInfo = PeerInfo.create();
+
+			if(this.peerInfo == undefined){
+				reject();
+			}else{
+				this.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
+				Log.info(`[DHT] assigned peer id ${this.peerInfo.id}`);
+				resolve();
+			}
+		});
+		
 	}
 
-	private async initDhtNode(){
-		try{
-			const peerInfo = this.peerInfo;
-			this.node = await Libp2p.create({
-			    peerInfo,
-			    modules: {
-			      transport: [TCP],
-			      streamMuxer: [Mplex],
-			      connEncryption: [SECIO],
-			      dht: KadDHT
-			    },
-			    config: {
-			      dht: {
-			        enabled: true
-			      }
-			    }
-			  })
-			await this.node.start()
-		}catch(e){
-			Log.error('[DHT] excepccion occured on start', e);
-		}
+	private initDhtNode(){
+		return new Promise((resolve,reject) => {
+			try{
+				const peerInfo = this.peerInfo;
+				this.node = Libp2p.create({
+					peerInfo,
+					modules: {
+					  transport: [TCP],
+					  streamMuxer: [Mplex],
+					  connEncryption: [SECIO],
+					  dht: KadDHT
+					},
+					config: {
+					  dht: {
+						enabled: true
+					  }
+					}
+				  })
+				this.node.start()
+				resolve();
+			}catch(e){
+				Log.error('[DHT] excepccion occured on start', e);
+				reject();
+			}
+		});
 	}
 
 	public registerPeer(peer:any){
