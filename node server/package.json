@@ -39,6 +39,7 @@
     "libp2p-mplex": "^0.9.5",
     "libp2p-secio": "^0.12.4",
     "libp2p-tcp": "^0.14.4",
+    "parse-torrent": "^7.1.2",
     "peer-id": "^0.13.11",
     "peer-info": "^0.17.5",
     "webtorrent": "^0.108.1",

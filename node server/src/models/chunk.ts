@@ -11,17 +11,17 @@ export class Chunk {
 		this.value = null;
 	}
 
-	public static async buildWithValue(value: Buffer): Promise<Chunk>{
+	public static buildWithValue(value: Buffer): Chunk{
 		const chunk: Chunk = new Chunk();
 		chunk.value = value;
-		chunk.cid = await DHT.getInstance().put(chunk);
+		chunk.cid = Promise.resolve(DHT.getInstance().put(chunk));
 		return chunk;
 	}
 
-	public static async buildWithCid(cid: Buffer): Promise<Chunk>{
+	public static buildWithCid(cid: Buffer): Chunk{
 		const chunk: Chunk = new Chunk();
 		chunk.cid = cid;
-		chunk.value = await DHT.getInstance().get(chunk);
+		chunk.value = Promise.resolve(DHT.getInstance().get(chunk));
 		return chunk;
 	}
 }
