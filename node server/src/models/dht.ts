@@ -4,12 +4,8 @@
 
 "use strict";
 
-import Libp2p = require('libp2p');
-import TCP = require('libp2p-tcp');
-import Mplex = require('libp2p-mplex');
-import SECIO = require('libp2p-secio');
-import PeerInfo = require('peer-info');
-import KadDHT = require('libp2p-kad-dht');
+import * as OS from 'os';
+import BittorrentDHT = require('bittorrent-dht');
 
 
 import { Log } from '../log';
@@ -30,103 +26,108 @@ export class DHT {
         return DHT.singletonInstance;
 	}
 
-	private node: any;
-	private peerInfo: any;
+	private dht: any;
+	private dhtId: any;
 	private peers: any [];
 
 	constructor(){
-		this.node = null;	
-		this.peerInfo = null;
+		this.dht = null;	
+		this.dhtId = null;
 		this.peers = new Array();
 	}
 
-	private init(){
-		this.arrayPromises.push(this.initPeerInfo());
-		this.arrayPromises.push(this.initDhtNode());
+	private async init(){
+		await this.generateId();
+		await this.initDht();
+	}
 
-		Promise.all(this.arrayPromises)
-			.then(() => {
-				//Here all have been done right
-				console.log("Todo OK :D");
-			})
-			.catch(() => {
-				//Here some have functions have errors
-				console.log("Algo ha ido mal D:");
+	public generateId(){
+		const ifaces = OS.networkInterfaces();
+		const iface = ifaces[Config.getInstance().dht.idIface];
+
+		// obtain mac
+		let mac = null;
+		if(iface !== undefined){
+			mac = iface[0].mac;
+			Log.debug(`[DHT] Using the iface ${Config.getInstance().dht.idIface} MAC address ${mac} as id`);
+		}else{
+			Log.error(`[DHT] The iface ${Config.getInstance().dht.idIface} was not found, looking for other ifaces`, null);
+
+			let availableIfaces: any = [];
+			Object.keys(ifaces).forEach(aIface => {
+				availableIfaces.push(aIface);
 			});
-		//await this.initPeerInfo();
-		//await this.initDhtNode();
-		Log.info(`[DHT] dht started`);
+			const selectedIface = availableIfaces[0];
+			mac = availableIfaces[selectedIface][0].mac;
+
+			Log.debug(`[DHT] Using the iface ${selectedIface} MAC address ${mac} as id`);
+		}
+
+		// generate id with mac
+		this.dhtId = Buffer.alloc(20).fill(mac);
+		Log.info(`[DHT] assigned id ${this.dhtId}`);
 	}
 
-	private initPeerInfo(){
-		return new Promise((resolve,reject) => {
-			//Make neccesary start things and if it goes right resolve() else reject()
-			this.peerInfo = PeerInfo.create();
-
-			if(this.peerInfo == undefined){
-				reject();
-			}else{
-				this.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0');
-				Log.info(`[DHT] assigned peer id ${this.peerInfo.id}`);
-				resolve();
+	private async initDht(){
+		try{
+			const opts = {
+				nodeId: this.dhtId,
+				host: false,
+  				//bootstrap: [],   // bootstrap servers (default: router.bittorrent.com:6881, router.utorrent.com:6881, dht.transmissionbt.com:6881)
+			  	concurrency: 16,
+			  	timeBucketOutdated: 900000, // check buckets every 15min
+				maxAge: Infinity
 			}
-		});
-		
-	}
-
-	private initDhtNode(){
-		return new Promise((resolve,reject) => {
-			try{
-				const peerInfo = this.peerInfo;
-				this.node = Libp2p.create({
-					peerInfo,
-					modules: {
-					  transport: [TCP],
-					  streamMuxer: [Mplex],
-					  connEncryption: [SECIO],
-					  dht: KadDHT
-					},
-					config: {
-					  dht: {
-						enabled: true
-					  }
-					}
-				  })
-				this.node.start()
-				resolve();
-			}catch(e){
-				Log.error('[DHT] excepccion occured on start', e);
-				reject();
-			}
-		});
-	}
-
-	public registerPeer(peer:any){
-		Log.info(`[DHT] registering peer with id ${peer.id}`);
-		let isRegistered = false;
-		this.peers.forEach((item, index) => {
-			if(item.id === peer.id)
-				isRegistered = true;
-		});
-
-		if(! isRegistered){
-			this.node.dial(peer.peerInfo);
-			this.peers.push(peer.peerInfo);
+			// instance and start listening
+			this.dht = new BittorrentDHT(opts);
+			this.dht.listen(Config.getInstance().dht.port, function () {
+				Log.info(`[DHT] listening on port ${Config.getInstance().dht.port}`);
+			})
+		}catch(e){
+			Log.error('[DHT] excepccion occured on start', e);
 		}
 	}
 
-	public put(chunk: Chunk){
-		Log.info(`[DHT] put CID ${chunk.cid}`);
-		this.node.dht.put(chunk.cid, chunk.value);
+	public registerPeer(host:string, port:string){
+		const peer = {
+			host: host,
+			port: port
+		};
+		this.peers.push(peer);
+		this.dht.addNode(peer);
+		Log.info('Added node ${peer}');
+	}
+
+	public async put(chunk: Chunk):Promise<Buffer>{
+		Log.debug(`[DHT] put '${chunk.value.toString('utf8')}'`);
+		const dht = this.dht;
+		return new Promise<Buffer>(function(resolve, reject) {
+			dht.put(chunk.value, (err:any, cid:any) => {
+				if(err){
+					Log.error(`[DHT] put '${chunk.value.toString('utf8')}' error `, err);
+					reject(err);
+				}else{
+					Log.debug(`[DHT] put '${chunk.value.toString('utf8')}' success -> cid '${cid.toString('utf8')}'`);
+					resolve(cid)
+				}
+			})
+		});
 	}
 
 	public async get(chunk: Chunk): Promise<Buffer>{
-		Log.info(`[DHT] get CID ${chunk.cid}`);
-		const value = await this.node.dht.get(chunk.cid);
-		return value;
+		Log.debug(`[DHT] get '${chunk.cid.toString('utf8')}'`);
+		const dht = this.dht;
+		return new Promise<Buffer>(function(resolve, reject) {
+			dht.get(chunk.cid, (err:any, value:any) => {
+				if(err){
+					Log.error(`[DHT] get '${chunk.cid.toString('utf8')}' error `, err);
+					reject(err);
+				}else{
+					Log.debug(`[DHT] get '${chunk.cid.toString('utf8')}' success -> value '${value.v.toString('utf8')}'`);
+					resolve(value.v)
+				}
+			})
+		});
 	}
 
-	public cid(value: Buffer): Buffer{
-		return this.node.dht.get.bufferToKey(value);
-	}
 }

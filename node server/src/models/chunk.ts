@@ -11,14 +11,14 @@ export class Chunk {
 		this.value = null;
 	}
 
-	public static fidnByBuffer(value: Buffer): Chunk{
+	public static async buildWithValue(value: Buffer): Promise<Chunk>{
 		const chunk: Chunk = new Chunk();
 		chunk.value = value;
-		chunk.cid = DHT.getInstance().cid(value);
+		chunk.cid = await DHT.getInstance().put(chunk);
 		return chunk;
 	}
 
-	public static async findByCid(cid: Buffer): Promise<Chunk>{
+	public static async buildWithCid(cid: Buffer): Promise<Chunk>{
 		const chunk: Chunk = new Chunk();
 		chunk.cid = cid;
 		chunk.value = await DHT.getInstance().get(chunk);

@@ -27,6 +27,7 @@
     "@types/cors": "^2.8.6",
     "@types/formidable": "^1.0.31",
     "@types/webtorrent": "^0.107.2",
+    "bittorrent-dht": "^9.0.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
