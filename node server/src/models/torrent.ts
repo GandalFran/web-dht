@@ -3,11 +3,11 @@ import { File } from "./file";
 
 export class Torrent {
 
-	public static store(file: File): Torrent{
+	public static buildTorrentFromFile(file: File): Torrent{
 		return null;
 	}
 
-	public static retrieve(torrent: any): File{
+	public static buildFileFromTorrent(torrent: any): File{
 		return null;
 	}
 }
