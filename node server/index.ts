@@ -29,22 +29,24 @@ import { File, Torrent } from "./src/models/file";
 
 setTimeout(async function(){
 
-	const path:string = './test/pruebaTorrent.txt';
 
+	const path:string = './test/descarga.jpg';
+    Log.debug(`Storing file ${path}`);
 	const file:File = File.buildWithPath(path);
-    Log.debug(`Created File ${file.path}: ${file.content}`);
-
 	const chunks: Chunk[] = await file.split();
-	chunks.forEach( chunk => {
-		Log.debug(`Chunk ${chunk.cid}`);
-		chunk.value = null;
+
+	const path2:string = './test/descarga2.jpg';
+    Log.debug(`Retrieving file ${path2}`);    
+
+    Log.debug(`Creting new chunks ${path2}`);
+    const newChunks: Chunk[] = await file.split();
+    chunks.forEach(async function(chunk){
+		Log.debug(`recreating chunk ${chunk.cid}`);
+		let newChunk: Chunk = await Chunk.buildWithCid(chunk.cid);
+		newChunks.push(newChunk);
 	})
-	Log.debug(`Deleted chunks values`);
 
-
-	const path2:string = './test/222pruebaTorrent.txt';
-	Log.debug(`Creating file ${path2} -> ${chunks}`);
+	Log.debug(`Joining chunks ${path2}`);
 	const file2:File = File.buildWithChunks(path2, chunks);
-	Log.debug(`Created file ${path2}`);
 
 }, 5000)

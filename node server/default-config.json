@@ -7,7 +7,7 @@
     "dht": {
         "port": 5000,
         "idIface": "wifi0",
-    	"chunkSize": 999,
+    	"chunkSize": 900,
     	"bootstrapPeer": "localhost:5000"
     }
 }

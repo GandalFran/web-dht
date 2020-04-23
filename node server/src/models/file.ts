@@ -32,6 +32,7 @@ export class File {
 		const f:File = new File();
 		f.path = path;
 		f.join(chunks);
+		f.write();
 		return f;
 	}
 
@@ -50,7 +51,7 @@ export class File {
 	   	return chunks;
 	}
 
-	private join(chunks:Chunk[]){
+	private async join(chunks:Chunk[]){
 		Log.debug(`[FILE] chunks ${chunks}`);
 		const bufferChunks: Buffer[] = [];
 		chunks.forEach( chunk => {

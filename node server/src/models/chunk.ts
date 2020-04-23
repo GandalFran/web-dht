@@ -22,7 +22,7 @@ export class Chunk {
 	public static async buildWithCid(cid: Buffer): Promise<Chunk>{
 		const chunk: Chunk = new Chunk();
 		chunk.cid = cid;
-		chunk.cid = await DHT.getInstance().get(chunk);
+		chunk.value = await DHT.getInstance().get(chunk);
 		return chunk;
 	}
 }
