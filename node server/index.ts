@@ -20,33 +20,35 @@ Log.setLogLevel(Config.getInstance().log);
 DHT.getInstance();
 
 // start express application
-//DHTApplication.getInstance().start();
+DHTApplication.getInstance().start();
 
 
+/*
+
+NO BORRAR, ES UN TEST
 // test
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 
 setTimeout(async function(){
-
-
-	const path:string = './test/descarga.jpg';
+	const path:string = './test/small.mp4';
     Log.debug(`Storing file ${path}`);
 	const file:File = File.buildWithPath(path);
 	const chunks: Chunk[] = await file.split();
 
-	const path2:string = './test/descarga2.jpg';
+	const path2:string = './test/small2.mp4';
     Log.debug(`Retrieving file ${path2}`);    
 
     Log.debug(`Creting new chunks ${path2}`);
-    const newChunks: Chunk[] = await file.split();
-    chunks.forEach(async function(chunk){
-		Log.debug(`recreating chunk ${chunk.cid}`);
-		let newChunk: Chunk = await Chunk.buildWithCid(chunk.cid);
-		newChunks.push(newChunk);
+    const cids:Buffer[] = [];
+    chunks.forEach(function(chunk){
+    	cids.push(chunk.cid)
 	})
 
+	const newChunks:Chunk[] = await Torrent.retrieveFromDht(cids);
+
 	Log.debug(`Joining chunks ${path2}`);
-	const file2:File = File.buildWithChunks(path2, chunks);
+	const file2:File = File.buildWithChunks(path2, newChunks);
 
 }, 5000)
+*/

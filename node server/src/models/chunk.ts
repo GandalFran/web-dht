@@ -13,16 +13,28 @@ export class Chunk {
 	}
 
 	public static async buildWithValue(value: Buffer): Promise<Chunk>{
-		const chunk: Chunk = new Chunk();
-		chunk.value = value;
-		chunk.cid = await DHT.getInstance().put(chunk);
-		return chunk;
+		return new Promise<Chunk>(function(resolve, reject) {
+			const chunk: Chunk = new Chunk();
+			chunk.value = value;
+			DHT.getInstance().put(chunk).then(function(cid){
+				chunk.cid = cid;
+				resolve(chunk);
+			}).catch(function(err){
+				reject(err);
+			});
+		});
 	}
 	
 	public static async buildWithCid(cid: Buffer): Promise<Chunk>{
-		const chunk: Chunk = new Chunk();
-		chunk.cid = cid;
-		chunk.value = await DHT.getInstance().get(chunk);
-		return chunk;
+		return new Promise<Chunk>(function(resolve, reject) {
+			const chunk: Chunk = new Chunk();
+			chunk.cid = cid;
+			DHT.getInstance().get(chunk).then(function(value){
+				chunk.value = value;
+				resolve(chunk);
+			}).catch(function(err){
+				reject(err);
+			});
+		});
 	}
 }

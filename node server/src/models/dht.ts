@@ -74,7 +74,7 @@ export class DHT {
 				nodeId: this.dhtId,
 				host: false,
   				//bootstrap: [],   // bootstrap servers (default: router.bittorrent.com:6881, router.utorrent.com:6881, dht.transmissionbt.com:6881)
-			  	concurrency: 16,
+			  	concurrency: 32,
 			  	timeBucketOutdated: 900000, // check buckets every 15min
 				maxAge: Infinity
 			}
@@ -99,15 +99,14 @@ export class DHT {
 	}
 
 	public async put(chunk: Chunk):Promise<Buffer>{
-		Log.debug(`[DHT] put '${chunk.value.toString('utf8')}'\n`);
 		const dht = this.dht;
 		return new Promise<Buffer>(function(resolve, reject) {
 			dht.put(chunk.value, (err:any, cid:any) => {
 				if(err){
-					Log.error(`[DHT] put '${chunk.value.toString('utf8')}' error `, err);
+					Log.error(`[DHT] put error`, err);
 					reject(err);
 				}else{
-					Log.debug(`[DHT] put '${chunk.value.toString('utf8')}' success -> cid '${cid.toString('utf8')}'`);
+					Log.debug(`[DHT] put '${cid.toString('base64')}' success`);
 					resolve(cid)
 				}
 			});
@@ -115,15 +114,14 @@ export class DHT {
 	}
 
 	public async get(chunk: Chunk): Promise<Buffer>{
-		Log.debug(`[DHT] get '${chunk.cid.toString('utf8')}'`);
 		const dht = this.dht;
 		return new Promise<Buffer>(function(resolve, reject) {
 			dht.get(chunk.cid, (err:any, value:any) => {
 				if(err){
-					Log.error(`[DHT] get '${chunk.cid.toString('utf8')}' error `, err);
+					Log.error(`[DHT] get '${chunk.cid.toString('base64')}' error `, err);
 					reject(err);
 				}else{
-					Log.debug(`[DHT] get '${chunk.cid.toString('utf8')}' success -> value '${value.v.toString('utf8')}'`);
+					Log.debug(`[DHT] get '${chunk.cid.toString('base64')}' success`);
 					resolve(value.v)
 				}
 			})

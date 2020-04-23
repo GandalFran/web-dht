@@ -37,30 +37,30 @@ export class File {
 	}
 
 	public async split(): Promise<Chunk []> {
-		let chunk:Chunk = null;
-		let bufferChunk:Buffer = null;
-		const chunks:Chunk[] = [];
+		const chunks: Promise<Chunk>[] = [];
 		const chunkSize: number = Config.getInstance().dht.chunkSize;
 
 	    for (var i = 0; i < this.content.length; i += chunkSize) {
-	        bufferChunk = this.content.slice(i, i+chunkSize);
-			chunk = await Chunk.buildWithValue(bufferChunk);
+	        let bufferChunk:Buffer = this.content.slice(i, i+chunkSize);
+			let chunk:Promise<Chunk> = Chunk.buildWithValue(bufferChunk);
 			chunks.push(chunk);
 	   	}
-	   	
-	   	return chunks;
+
+	   	return new Promise<Chunk []>(function(resolve, reject){
+			Promise.all(chunks).then(function(values){
+				resolve(values);
+   			}).catch(function(error){
+   				reject(error);
+   			});
+	   	});
 	}
 
 	private async join(chunks:Chunk[]){
-		Log.debug(`[FILE] chunks ${chunks}`);
 		const bufferChunks: Buffer[] = [];
 		chunks.forEach( chunk => {
-			Log.debug(`[FILE] chunk ${chunk.cid} ${chunk.value}`);
 			bufferChunks.push(chunk.value);
 		});
-		Log.debug(`[FILE] concat ${bufferChunks}`);
 		this.content = Buffer.concat(bufferChunks);
-		Log.debug(`[FILE] post concat ${bufferChunks}`);
 	}
 
 	protected read(){
@@ -107,5 +107,24 @@ export class Torrent extends File{
 
 		return files;*/
 		return null;
+	}
+
+	// TODO esto sera privado en un futuro
+	public static async retrieveFromDht(cids:Buffer[]): Promise<Chunk []>{
+
+		const chunks: Promise<Chunk>[] = [];
+		cids.forEach(async function(cid){
+			let chunk: Promise<Chunk> = Chunk.buildWithCid(cid);
+			chunks.push(chunk);
+		});
+
+	   	return new Promise<Chunk []>(function(resolve, reject){
+			Promise.all(chunks).then(function(values){
+				resolve(values);
+   			}).catch(function(error){
+   				reject(error);
+   			});
+	   	});
+
 	}
 }
