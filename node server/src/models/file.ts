@@ -51,14 +51,15 @@ export class File {
 	}
 
 	private join(chunks:Chunk[]){
-		let bufferChunk:Buffer = null;
+		Log.debug(`[FILE] chunks ${chunks}`);
 		const bufferChunks: Buffer[] = [];
-		
 		chunks.forEach( chunk => {
+			Log.debug(`[FILE] chunk ${chunk.cid} ${chunk.value}`);
 			bufferChunks.push(chunk.value);
 		});
-
+		Log.debug(`[FILE] concat ${bufferChunks}`);
 		this.content = Buffer.concat(bufferChunks);
+		Log.debug(`[FILE] post concat ${bufferChunks}`);
 	}
 
 	protected read(){
