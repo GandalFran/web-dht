@@ -36,9 +36,9 @@ export class File {
 	}
 
 	public split(): Chunk [] {
-		let chunk:Chunk = null;
+		let chunk:Promise<Chunk> = null;
 		let bufferChunk:Buffer = null;
-		const chunks:Chunk[] = [];
+		const chunks:Promise<Chunk>[] = [];
 		const chunkSize: number = Config.getInstance().dht.chunkSize;
 
 	    for (var i = 0; i < this.content.length; i += chunkSize) {
@@ -47,7 +47,15 @@ export class File {
 			chunks.push(chunk);
 	   	}
 
-		return chunks;
+	   	let resultChunks: Chunk [] = null;
+	   	Promise.all(chunks).then( resolvedChunks => {
+	   		resultChunks = resolvedChunks;
+	   	}).catch( error => {
+	   		Log.error("[FILE]", error);
+	   		resultChunks = null;
+	   	})
+	   	
+	   	return resultChunks;
 	}
 
 	private join(chunks:Chunk[]){

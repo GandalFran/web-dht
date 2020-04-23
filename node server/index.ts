@@ -27,15 +27,14 @@ DHT.getInstance();
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 
-setTimeout(function(){
+setTimeout(async function(){
 
 	const path:string = './test/pruebaTorrent.txt';
 
 	const file:File = File.buildWithPath(path);
 	Log.debug(`Created File ${file.path}: ${file.content}`);
 
-	const chunks:Chunk[] = file.split();
-
+	const chunks: Chunk[] = file.split();
 	chunks.forEach( chunk => {
 		Log.debug(`Chunk ${chunk.cid}`);
 		chunk.value = null;
@@ -47,4 +46,5 @@ setTimeout(function(){
 	Log.debug(`Creating file ${path2} -> ${chunks}`);
 	const file2:File = File.buildWithChunks(path2, chunks);
 	Log.debug(`Created file ${path2}`);
+
 }, 5000)
