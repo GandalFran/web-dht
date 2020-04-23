@@ -85,7 +85,7 @@ export class Torrent extends File{
 	}
 
 	public static buildFileFromTorrent(torrent: Torrent): File [] {
-		torrent.read();
+		/*torrent.read();
 		const parsedTorrent = ParseTorrent(torrent.content);
 		const torrentFiles = parsedTorrent.files;
 
@@ -103,6 +103,7 @@ export class Torrent extends File{
 			files.push(file);
 		});
 
-		return files;
+		return files;*/
+		return null;
 	}
 }

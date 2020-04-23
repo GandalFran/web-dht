@@ -9,10 +9,10 @@ import WebTorrent from "webtorrent";
 import { IncomingForm } from 'formidable';
 
 import { Log } from "../log";
-import { Torrent } from "../models/torrent";
+import { File, Torrent } from "../models/file";
 
 
-export class TorrentFileController{
+export class FileController{
 
     private torrent: any;
 

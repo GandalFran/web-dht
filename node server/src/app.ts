@@ -4,21 +4,19 @@
 
 "use strict";
 
+import Cors from "cors";
 import * as FS from "fs";
 import * as Path from "path";
 import * as HTTP from "http";
 import Express from "express";
-import Cors from "cors";
 import CookieParser from 'cookie-parser';
 import * as BodyParser from 'body-parser';
 
 import { Log } from "./log";
 import { Config } from "./config";
-import { DHTController } from "./controllers/dhtController";
-import { StatusController } from "./controllers/statusController";
-import { BootstrapStartController } from "./controllers/bootstrapStartController";
-import { TorrentFileController } from "./controllers/torrentFileController";
 import { HTTP_COOKIE_SECRET } from "./util/http";
+import { StatusController } from "./controllers/statusController";
+import { FileController } from "./controllers/fileController";
 
 
 export class DHTApplication {
@@ -48,18 +46,6 @@ export class DHTApplication {
         });
     }
 
-    private registerControllers() {
-        const dhtController = new DHTController();
-        const statusController = new StatusController();
-        const torrentFileController = new TorrentFileController();
-        const bootstarpStartController = new BootstrapStartController();
-
-        dhtController.registerController(this.application);
-        statusController.registerController(this.application);
-        torrentFileController.registerController(this.application);
-        bootstarpStartController.registerController(this.application);
-    }
-
     private configureParsers() {
         this.application.use(BodyParser.raw());
         this.application.use(BodyParser.text());
@@ -67,5 +53,12 @@ export class DHTApplication {
         this.application.use(BodyParser.json({ limit: "300mb" }));
         this.application.use(BodyParser.urlencoded({ limit: "300mb", extended: true, parameterLimit: 1000000}));
     }
-    
+
+    private registerControllers() {
+        const statusController = new StatusController();
+        const fileController = new FileController();
+
+        statusController.registerController(this.application);
+        fileController.registerController(this.application);
+    }
 }
