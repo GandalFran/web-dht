@@ -101,7 +101,10 @@ export class DHT {
 	public async put(chunk: Chunk):Promise<Buffer>{
 		Log.debug(`[DHT] put '${chunk.value.toString('utf8')}'`);
 		const dht = this.dht;
+		Log.debug(`[DHT] valor de la variable dht es '${dht}'`);
+		Log.debug(`[DHT] valor de la variable privada dht es '${this.dht}'`);
 		return new Promise<Buffer>(function(resolve, reject) {
+			Log.debug(`[DHT] second put '${dht}'`);
 			dht.put(chunk.value, (err:any, cid:any) => {
 				if(err){
 					Log.error(`[DHT] put '${chunk.value.toString('utf8')}' error `, err);
@@ -110,7 +113,7 @@ export class DHT {
 					Log.debug(`[DHT] put '${chunk.value.toString('utf8')}' success -> cid '${cid.toString('utf8')}'`);
 					resolve(cid)
 				}
-			})
+			});
 		});
 	}
 

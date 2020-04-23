@@ -32,9 +32,9 @@ setTimeout(async function(){
 	const path:string = './test/pruebaTorrent.txt';
 
 	const file:File = File.buildWithPath(path);
-	Log.debug(`Created File ${file.path}: ${file.content}`);
+    Log.debug(`Created File ${file.path}: ${file.content}`);
 
-	const chunks: Chunk[] = file.split();
+	const chunks: Chunk[] = await file.split();
 	chunks.forEach( chunk => {
 		Log.debug(`Chunk ${chunk.cid}`);
 		chunk.value = null;

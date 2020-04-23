@@ -35,27 +35,19 @@ export class File {
 		return f;
 	}
 
-	public split(): Chunk [] {
-		let chunk:Promise<Chunk> = null;
+	public async split(): Promise<Chunk []> {
+		let chunk:Chunk = null;
 		let bufferChunk:Buffer = null;
-		const chunks:Promise<Chunk>[] = [];
+		const chunks:Chunk[] = [];
 		const chunkSize: number = Config.getInstance().dht.chunkSize;
 
 	    for (var i = 0; i < this.content.length; i += chunkSize) {
 	        bufferChunk = this.content.slice(i, i+chunkSize);
-			chunk = Chunk.buildWithValue(bufferChunk);
+			chunk = await Chunk.buildWithValue(bufferChunk);
 			chunks.push(chunk);
 	   	}
-
-	   	let resultChunks: Chunk [] = null;
-	   	Promise.all(chunks).then( resolvedChunks => {
-	   		resultChunks = resolvedChunks;
-	   	}).catch( error => {
-	   		Log.error("[FILE]", error);
-	   		resultChunks = null;
-	   	})
 	   	
-	   	return resultChunks;
+	   	return chunks;
 	}
 
 	private join(chunks:Chunk[]){
@@ -87,7 +79,7 @@ export class Torrent extends File{
 	}
 
 	public static buildTorrentFromFile(file: File): Torrent{
-		const chunks: Chunk[] = file.split();
+		/*const chunks: Chunk[] = file.split();*/
 
 		//TODO: export chunks to .totrent file
 		return null;
