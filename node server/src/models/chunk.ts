@@ -16,7 +16,9 @@ export class Chunk {
 	public static buildWithValue(value: Buffer): Chunk{
 		const chunk: Chunk = new Chunk();
 		chunk.value = value;
-		chunk.cid = Promise.resolve(DHT.getInstance().put(chunk));
+		Promise.resolve(DHT.getInstance().put(chunk)).then(function(result){
+			chunk.cid = result;
+		});
 		return chunk;
 	}
 	
@@ -24,7 +26,9 @@ export class Chunk {
 	public static buildWithCid(cid: Buffer): Chunk{
 		const chunk: Chunk = new Chunk();
 		chunk.cid = cid;
-		chunk.value = Promise.resolve(DHT.getInstance().get(chunk));
+		Promise.resolve(DHT.getInstance().get(chunk)).then(function(result){
+			chunk.value = result;
+		});
 		return chunk;
 	}
 }
