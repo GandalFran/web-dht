@@ -20,9 +20,9 @@ Log.setLogLevel(Config.getInstance().log);
 DHT.getInstance();
 
 // start express application
-DHTApplication.getInstance().start();
+//DHTApplication.getInstance().start();
 
-/*
+
 import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
@@ -54,4 +54,3 @@ setTimeout(async function(){
 	}
 
 }, 5000)
-*/

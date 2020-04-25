@@ -72,13 +72,34 @@ export class DHT {
 			const opts = {
 				nodeId: this.dhtId,
 				host: false,
-  				//bootstrap: [],   // bootstrap servers (default: router.bittorrent.com:6881, router.utorrent.com:6881, dht.transmissionbt.com:6881)
-			  	concurrency: 32,
-			  	timeBucketOutdated: 900000, // check buckets every 15min
+  				bootstrap: [Config.getInstance().dht.bootstrapPeer],
+			  	concurrency: 16,
+			  	timeBucketOutdated: 900000,
 				maxAge: Infinity
 			}
+
 			// instance and start listening
 			this.dht = new BittorrentDHT(opts);
+
+			// register events
+			this.dht.on('peer', function(peer:any, infoHash:any, from:any){
+				Log.debug(`[DHT] found potential peer ${JSON.stringify(peer)}`);
+			});
+			this.dht.on('node', function(node:any){
+				Log.debug(`[DHT] find new node ${JSON.stringify(node)}`);
+			});
+			this.dht.on('announce', function(peer:any, infoHash:any){
+				Log.debug(`[DHT] announced itself ${JSON.stringify(peer)}`);
+			});
+
+			this.dht.on('warning', function(error:any){
+				Log.warning(`[DHT]`, error);
+			});
+			this.dht.on('error', function(error:any){
+				Log.error(`[DHT]`, error);
+			});
+
+			// start
 			this.dht.listen(Config.getInstance().dht.port, function () {
 				Log.info(`[DHT] listening on port ${Config.getInstance().dht.port}`);
 			})

@@ -66,9 +66,13 @@ export class Log {
         }
     }
 
-    public static warning(msg: string) {
+    public static warning(msg: string, e: Error) {
         if(Log.logLevel <= LogLevel.WARNING){
-            Log.log(`[WARNING] ${msg}`);
+            if(e){
+                Log.log(`[WARNING] ${msg}\nException ${e.name}: ${e.message} \n ${e.stack}`);
+            }else{
+                Log.log(`[WARNING] ${msg}`);
+            }
         }
     }
 
