@@ -12,7 +12,6 @@ import { Config } from '../config';
 import { Torrent } from '../models/file';
 
 export class TorrentStatus{
-	public status: any;
 	public torrent: Torrent;
 	public promise: Promise<any>;
 }
@@ -58,6 +57,18 @@ export class Loads {
 		return this.model[id];
 	}
 
+	public calculateUploadStatus(id:string): number{
+		let storedChunks: number = 0;
+		const numChunks: number = this.model[id].torrent.chunks.length;
+		this.model[id].torrent.chunks.forEach( chunk => {
+			if(chunk.cid){
+				storedChunks++;
+			}
+		})
+		const percentage: number = storedChunks/numChunks;
+		return percentage;
+	}
+
 	public startDownload(id:string, torrent: Torrent){
 		const status: TorrentStatus = new TorrentStatus();
 		status.torrent = torrent;
@@ -71,6 +82,18 @@ export class Loads {
 
 	public getDownloadStatus(id:string): TorrentStatus{
 		return this.model[id];
+	}
+
+	public calculateDownloadStatus(id:string): number{
+		let resolvedChunks: number = 0;
+		const numChunks: number = this.model[id].torrent.chunks.length;
+		this.model[id].torrent.chunks.forEach( chunk => {
+			if(chunk.value){
+				resolvedChunks++;
+			}
+		})
+		const percentage: number = resolvedChunks/numChunks;
+		return percentage;
 	}
 
 }

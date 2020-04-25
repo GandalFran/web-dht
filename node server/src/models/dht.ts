@@ -83,6 +83,9 @@ export class DHT {
 			this.dht = new BittorrentDHT(opts);
 
 			// register events
+			this.dht.on('ready', function(){
+				Log.debug(`[DHT] ready`);
+			});
 			this.dht.on('peer', function(peer:any, infoHash:any, from:any){
 				Log.debug(`[DHT] found potential peer ${JSON.stringify(peer)}`);
 			});
@@ -90,7 +93,7 @@ export class DHT {
 				Log.debug(`[DHT] find new node ${node.id.toString('utf8')} on ${node.host}:${node.port}`);
 			});
 			this.dht.on('announce', function(peer:any, infoHash:any){
-				Log.debug(`[DHT] announced itself ${JSON.stringify(peer)}`);
+				Log.debug(`[DHT] announced ${JSON.stringify(peer)}`);
 			});
 			this.dht.on('warning', function(error:any){
 				Log.warning(`[DHT]`, error);
@@ -100,22 +103,20 @@ export class DHT {
 			});
 
 			// start
+			const dht = this.dht;
+			const id = this.dhtId;
 			this.dht.listen(Config.getInstance().dht.port, function () {
 				Log.info(`[DHT] listening on port ${Config.getInstance().dht.port}`);
+				setInterval(function(){dht.announce(id)}, 5000);
 			})
 		}catch(e){
 			Log.error('[DHT] excepccion occured on start', e);
 		}
 	}
 
-	public registerPeer(host:string, port:string){
-		const peer = {
-			host: host,
-			port: port
-		};
-		this.peers.push(peer);
-		this.dht.addNode(peer);
-		Log.info('Added node ${peer}');
+	public async close(){
+		clearInterval();
+		await this.dht.destroy();
 	}
 
 	public async put(chunk: Chunk):Promise<Buffer>{
@@ -127,7 +128,7 @@ export class DHT {
 					reject(err);
 				}else{
 					Log.debug(`[DHT] put '${cid.toString('base64')}' success`);
-					resolve(cid)
+					resolve(cid);
 				}
 			});
 		});
@@ -136,18 +137,25 @@ export class DHT {
 	public async get(chunk: Chunk): Promise<Buffer>{
 		const dht = this.dht;
 		return new Promise<Buffer>(function(resolve, reject) {
-			dht.get(chunk.cid, (err:any, value:any) => {
-				if(err){
-					Log.error(`[DHT] get '${chunk.cid.toString('base64')}' error `, err);
-					reject(err);
-				}else if(value === null){
-					Log.error(`[DHT] get not found value for '${chunk.cid.toString('base64')}' `, null);
-					reject(null);
+			dht.lookup(chunk.cid, (error:any) => {
+				if(error){
+					Log.error(`[DHT] get lookup error`, error);
+					reject(error);
 				}else{
-					Log.debug(`[DHT] get '${chunk.cid.toString('base64')}' success`);
-					resolve(value.v)
+					dht.get(chunk.cid, (err:any, value:any) => {
+						if(err){
+							Log.error(`[DHT] get '${chunk.cid.toString('base64')}' error `, err);
+							reject(err);
+						}else if(value === null){
+							Log.error(`[DHT] get not found value for '${chunk.cid.toString('base64')}' `, null);
+							reject(null);
+						}else{
+							Log.debug(`[DHT] get '${chunk.cid.toString('base64')}' success`);
+							resolve(value.v)
+						}
+					});
 				}
-			})
+			});
 		});
 	}
 

@@ -19,30 +19,52 @@ Log.setLogLevel(Config.getInstance().log);
 // start the DHT 
 DHT.getInstance();
 
-// start express application
-//DHTApplication.getInstance().start();
+//do something when app is closing
+process.on('exit', DHT.getInstance().close.bind(null));
+process.on('SIGINT', DHT.getInstance().close.bind(null));
 
+// start express application
+DHTApplication.getInstance().start();
+
+/*
 
 import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 
-const fileName = 'video.mp4';
+const fileName = 'gif.gif';
 
-setTimeout(async function(){
-	const path:string = './test/' + fileName;
-	let torrentFile: Torrent = null;
-	
-	try{
-	    Log.debug(`Generating file ${path}`);
-		const file:File = File.buildFromPath(path);
-	    Log.debug(`Generating torrent for file ${path}`);
-	    torrentFile = Torrent.buildTorrentFromRegularFile(file);
-	    await torrentFile.store();
-	}catch(error){
-		Log.error("[INDEX] buildTorrentFromFile", error);
-	}
-	
-	FileSystem.renameSync(torrentFile.path, './test/prueba.torrent')
+if(Config.getInstance().dht.idIface === 'wifi0'){
 
-}, 5000)
+	setTimeout(async function(){
+		const path:string = './test/' + fileName;
+		let torrentFile: Torrent = null;
+		
+		try{
+		    Log.debug(`Generating file ${path}`);
+			const file:File = File.buildFromPath(path);
+		    Log.debug(`Generating torrent for file ${path}`);
+		    torrentFile = Torrent.buildTorrentFromRegularFile(file);
+		    await torrentFile.store();
+		}catch(error){
+			Log.error("[INDEX] buildTorrentFromFile", error);
+		}
+		
+		FileSystem.renameSync(torrentFile.path, './test/prueba.torrent')
+
+	}, 20000)
+
+}else{
+	setTimeout(async function(){
+		const torrentPath:string = './test/prueba.torrent';
+		try{
+		   	Log.debug(`Reading torreng from torrent file ${torrentPath}`);
+		    const torrentFile2: Torrent = Torrent.buildTorrentFromTorrentFile(torrentPath);
+		    await torrentFile2.resolve();
+		}catch(error){
+			Log.error("[INDEX] buildTorrentFromFile", error);
+		}
+
+	}, 20000)
+}
+*/
