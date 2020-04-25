@@ -16,7 +16,6 @@ import { Chunk } from '../models/chunk';
 export class DHT {
 
 	private static singletonInstance: DHT = null;
-	private arrayPromises : any[];
 
 	public static getInstance(): DHT {
 		if (! DHT.singletonInstance) {
