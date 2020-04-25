@@ -29,40 +29,40 @@ export class Log {
     public static setLogLevel(level: string){
         switch (level) {
             case "NONE":
-                Log.log(`[INFO] loglevel set to ${level}`);
+                Log.log(`[INFO   ] loglevel set to ${level}`);
                 Log.logLevel = LogLevel.NONE;
                 break;
             case "DEBUG":
-                Log.log(`[INFO] loglevel set to ${level}`);
+                Log.log(`[INFO   ] loglevel set to ${level}`);
                 Log.logLevel = LogLevel.DEBUG;
                 break;
             case "INFO":
-                Log.log(`[INFO] loglevel set to ${level}`);
+                Log.log(`[INFO   ] loglevel set to ${level}`);
                 Log.logLevel = LogLevel.INFO;
                 break;
             case "WARNING":
-                Log.log(`[INFO] loglevel set to ${level}`);
+                Log.log(`[INFO   ] loglevel set to ${level}`);
                 Log.logLevel = LogLevel.WARNING;
                 break;
             case "ERROR":
-                Log.log(`[INFO] loglevel set to ${level}`);
+                Log.log(`[INFO   ] loglevel set to ${level}`);
                 Log.logLevel = LogLevel.ERROR;
                 break;
             default:
                 Log.logLevel = LogLevel.NONE;
-                Log.log(`[ERROR] Given log level ${level} not found, using NONE instead`);
+                Log.log(`[ERROR  ] Given log level ${level} not found, using NONE instead`);
         }
     }
 
     public static debug(msg: string) {
         if(Log.logLevel <= LogLevel.DEBUG){
-            Log.log(`[DEBUG] ${msg}`);
+            Log.log(`[DEBUG  ] ${msg}`);
         }
     }
 
     public static info(msg: string) {
         if(Log.logLevel <= LogLevel.INFO){
-            Log.log(`[INFO] ${msg}`);
+            Log.log(`[INFO   ] ${msg}`);
         }
     }
 
@@ -75,16 +75,16 @@ export class Log {
     public static error(msg: string, e: Error) {
         if(Log.logLevel <= LogLevel.ERROR){
             if(e){
-                Log.log(`[ERROR] ${msg}\nException ${e.name}: ${e.message} \n ${e.stack}`);
+                Log.log(`[ERROR  ] ${msg}\nException ${e.name}: ${e.message} \n ${e.stack}`);
             }else{
-                Log.log(`[ERROR] ${msg}`);
+                Log.log(`[ERROR  ] ${msg}`);
             }
         }
     }
 
     public static exception(err: Error) {
         if(Log.logLevel <= LogLevel.ERROR){
-            Log.log(`[ERROR] ${err.message} \n ${err.stack}`);
+            Log.log(`[ERROR  ] ${err.message} \n ${err.stack}`);
         }
     }
 

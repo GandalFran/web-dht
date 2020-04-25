@@ -5,7 +5,9 @@
 "use strict";
 
 import * as FileSystem from "fs";
-import ParseTorrent = require('parse-torrent')
+import * as ParseTorrent from 'parse-torrent';
+import CreateTorrent = require('create-torrent');
+
 
 import { Log } from "../log"
 import { Chunk } from "./chunk"
@@ -13,49 +15,53 @@ import { Config } from "../config"
 
 export class File {
 
+	public name:string;
 	public path:string;
 	public content:Buffer;
 
 	constructor(){
+		this.name = '';
 		this.path = '';
 		this.content = null;
 	}
 
-	public static buildWithPath(path:string) {
-		const f:File = new File();
-		f.path = path;
-		f.read();
-		return f;
+	public static buildFromPath(path:string) {
+		const file:File = new File();
+		file.name = path;
+		file.path = path;
+		file.read();
+		return file;
 	}
 
-	public static buildWithChunks(path:string, chunks:Chunk[]){
-		const f:File = new File();
-		f.path = path;
-		f.join(chunks);
-		f.write();
-		return f;
+	public static buildFromChunks(path:string, chunks:Chunk[]): File {
+		const file:File = new File();
+		file.name = path;
+		file.path = path;
+		file.join(chunks);
+		file.write();
+		return file;
 	}
 
-	public async split(): Promise<Chunk []> {
-		const chunks: Promise<Chunk>[] = [];
+	public split(): Chunk [] {
+		const chunks: Chunk[] = [];
 		const chunkSize: number = Config.getInstance().dht.chunkSize;
 
+		// if there is no content, read the file
+		if(!this.content){
+			this.read();
+		}
+
+		// generate chunks
 	    for (var i = 0; i < this.content.length; i += chunkSize) {
 	        let bufferChunk:Buffer = this.content.slice(i, i+chunkSize);
-			let chunk:Promise<Chunk> = Chunk.buildWithValue(bufferChunk);
+			let chunk: Chunk = Chunk.buildWithValue(bufferChunk);
 			chunks.push(chunk);
 	   	}
 
-	   	return new Promise<Chunk []>(function(resolve, reject){
-			Promise.all(chunks).then(function(values){
-				resolve(values);
-   			}).catch(function(error){
-   				reject(error);
-   			});
-	   	});
+	   	return chunks;
 	}
 
-	private async join(chunks:Chunk[]){
+	public join(chunks:Chunk[]){
 		const bufferChunks: Buffer[] = [];
 		chunks.forEach( chunk => {
 			bufferChunks.push(chunk.value);
@@ -75,56 +81,111 @@ export class File {
 
 export class Torrent extends File{
 
+	public file:File;
+	public chunks:Chunk[];
+
 	constructor(){
 		super()
+		this.file = new File();
+		this.chunks = [];
 	}
 
-	public static buildTorrentFromFile(file: File): Torrent{
-		/*const chunks: Chunk[] = file.split();*/
+	public static buildTorrentFromRegularFile(file: File): Torrent{
+		const torrent: Torrent = new Torrent();
 
-		//TODO: export chunks to .totrent file
-		return null;
+		// buld torrent file object
+		torrent.file = file;
+		torrent.name = file.name + '.torrent';
+		torrent.path = file.path + '.torrent';
+		torrent.chunks = file.split();
+
+		return torrent;
 	}
 
-	public static buildFileFromTorrent(torrent: Torrent): File [] {
-		/*torrent.read();
-		const parsedTorrent = ParseTorrent(torrent.content);
-		const torrentFiles = parsedTorrent.files;
-
-		let file:File = null;
-		const files: File [] = [];
-		parsedTorrent.files.forEach( torrentFileInfo => {
-			let chunk:Chunk = null;
-			const chunks:Chunk = [];
-			torrentInfo.pieces.forEach(cid => {
-				chunk = Chunk.buildWithCid(cid);
-				chunks.push(chunk);
-			});	
-
-			file = File.buildWithChunks(torrentInfo.name, chunks);
-			files.push(file);
-		});
-
-		return files;*/
-		return null;
+	public static buildTorrentFromTorrentFile(path: string): Torrent{
+		const torrent:Torrent = new Torrent();
+		torrent.name = path;
+		torrent.path = path;
+		torrent.parseTorrentContent();
+		return torrent;
 	}
 
-	// TODO esto sera privado en un futuro
-	public static async retrieveFromDht(cids:Buffer[]): Promise<Chunk []>{
-
-		const chunks: Promise<Chunk>[] = [];
-		cids.forEach(async function(cid){
-			let chunk: Promise<Chunk> = Chunk.buildWithCid(cid);
-			chunks.push(chunk);
-		});
-
-	   	return new Promise<Chunk []>(function(resolve, reject){
-			Promise.all(chunks).then(function(values){
-				resolve(values);
+	public async store() : Promise<any>{
+		const torrent = this;
+	   	return new Promise<any>(function(resolve, reject){
+	   		const promises: Promise<any>[] = [];
+			torrent.chunks.forEach(function(chunk){
+				if(!chunk.cid){
+					promises.push(chunk.store());
+				}
+			});
+			Promise.all(promises).then(function(){
+				torrent.buildTorrentContent();
+				torrent.write();
+				resolve();
    			}).catch(function(error){
    				reject(error);
    			});
 	   	});
+	}
 
+	public async resolve() : Promise<any>{
+		const torrent = this;
+	   	return new Promise<any>(function(resolve, reject){
+	   		const promises: Promise<any>[] = [];
+			torrent.chunks.forEach(function(chunk){
+				if(!chunk.value){
+					promises.push(chunk.resolve());
+				}
+			});
+			Promise.all(promises).then(function(){
+				torrent.file = File.buildFromChunks(torrent.file.path, torrent.chunks)
+				resolve();
+   			}).catch(function(error){
+   				reject(error);
+   			});
+	   	});
+	}
+
+	private buildTorrentContent(): any{
+		const torrentInfo:any = {
+			name: this.file.name,
+			path: this.file.path,
+			created: new Date(),
+			comment: 'created during the final days of humanity after the arrival of covid19',
+			files: [{
+				path: this.file.path,
+				name: this.file.name,
+				length: this.file.content.length,
+				offset: 0,
+			}],
+			length: this.file.content.length,
+			pieceLength: Config.getInstance().dht.chunkSize,
+			lastPieceLength: this.chunks[this.chunks.length-1].value.length,
+			pieces: []
+		};
+
+		// complete torrent info
+		this.chunks.forEach( chunk => {
+			torrentInfo.pieces.push(chunk.cid.toString('base64'));
+		});
+
+		this.content = Buffer.from(JSON.stringify({info:torrentInfo}));
+	}
+
+	private parseTorrentContent(){
+		// read if content not loaded
+		if(!this.content){
+			this.read();
+		}
+		// parse content
+		const torrentInfo:any = JSON.parse(this.content.toString('utf-8'));
+
+		this.file.path = torrentInfo.info.name;
+		this.file.name = torrentInfo.info.path;
+		for(var i=0; i<torrentInfo.info.pieces.length; i++){
+			const piece = torrentInfo.info.pieces[i];
+			this.chunks.push(Chunk.buildWithCid(Buffer.from(piece, 'base64')));
+		}
 	}
 }

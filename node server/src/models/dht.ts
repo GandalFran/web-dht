@@ -120,6 +120,9 @@ export class DHT {
 				if(err){
 					Log.error(`[DHT] get '${chunk.cid.toString('base64')}' error `, err);
 					reject(err);
+				}else if(value === null){
+					Log.error(`[DHT] get not found value for '${chunk.cid.toString('base64')}' `, null);
+					reject(null);
 				}else{
 					Log.debug(`[DHT] get '${chunk.cid.toString('base64')}' success`);
 					resolve(value.v)

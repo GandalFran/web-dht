@@ -22,33 +22,36 @@ DHT.getInstance();
 // start express application
 DHTApplication.getInstance().start();
 
-
 /*
-
-NO BORRAR, ES UN TEST
-// test
+import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 
+const fileName = 'texto.txt';
+
 setTimeout(async function(){
-	const path:string = './test/small.mp4';
-    Log.debug(`Storing file ${path}`);
-	const file:File = File.buildWithPath(path);
-	const chunks: Chunk[] = await file.split();
+	const path:string = './test/' + fileName;
+	let torrentFile: Torrent = null;
+	
+	try{
+	    Log.debug(`Generating file ${path}`);
+		const file:File = File.buildFromPath(path);
+	    Log.debug(`Generating torrent for file ${path}`);
+	    torrentFile = Torrent.buildTorrentFromRegularFile(file);
+	    await torrentFile.store();
+	}catch(error){
+		Log.error("[INDEX] buildTorrentFromFile", error);
+	}
+	
+	FileSystem.renameSync(path, './test/OLD' + fileName)
 
-	const path2:string = './test/small2.mp4';
-    Log.debug(`Retrieving file ${path2}`);    
-
-    Log.debug(`Creting new chunks ${path2}`);
-    const cids:Buffer[] = [];
-    chunks.forEach(function(chunk){
-    	cids.push(chunk.cid)
-	})
-
-	const newChunks:Chunk[] = await Torrent.retrieveFromDht(cids);
-
-	Log.debug(`Joining chunks ${path2}`);
-	const file2:File = File.buildWithChunks(path2, newChunks);
+	try{
+	   	Log.debug(`Reading torreng from torrent file ${torrentFile.path}`);
+	    const torrentFile2: Torrent = Torrent.buildTorrentFromTorrentFile(torrentFile.path);
+	    await torrentFile2.resolve();
+	}catch(error){
+		Log.error("[INDEX] buildTorrentFromFile", error);
+	}
 
 }, 5000)
 */
