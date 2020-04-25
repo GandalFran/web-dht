@@ -27,22 +27,16 @@ import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 
-const fileName = 'video.mp4';
+const fileName = 'texto.txt';
 
 setTimeout(async function(){
-	const path:string = './test/' + fileName;
-	let torrentFile: Torrent = null;
-	
+	const torrentPath:string = './test/prueba.torrent';
 	try{
-	    Log.debug(`Generating file ${path}`);
-		const file:File = File.buildFromPath(path);
-	    Log.debug(`Generating torrent for file ${path}`);
-	    torrentFile = Torrent.buildTorrentFromRegularFile(file);
-	    await torrentFile.store();
+	   	Log.debug(`Reading torreng from torrent file ${torrentPath}`);
+	    const torrentFile2: Torrent = Torrent.buildTorrentFromTorrentFile(torrentPath);
+	    await torrentFile2.resolve();
 	}catch(error){
 		Log.error("[INDEX] buildTorrentFromFile", error);
 	}
-	
-	FileSystem.renameSync(torrentFile.path, './test/prueba.torrent')
 
 }, 5000)

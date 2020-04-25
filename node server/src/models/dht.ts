@@ -63,6 +63,7 @@ export class DHT {
 		}
 
 		// generate id with mac
+		const id = mac + Math.floor(Math.random() * 10000);
 		this.dhtId = Buffer.alloc(20).fill(mac);
 		Log.info(`[DHT] assigned id ${this.dhtId}`);
 	}
@@ -86,12 +87,11 @@ export class DHT {
 				Log.debug(`[DHT] found potential peer ${JSON.stringify(peer)}`);
 			});
 			this.dht.on('node', function(node:any){
-				Log.debug(`[DHT] find new node ${JSON.stringify(node)}`);
+				Log.debug(`[DHT] find new node ${node.id.toString('utf8')} on ${node.host}:${node.port}`);
 			});
 			this.dht.on('announce', function(peer:any, infoHash:any){
 				Log.debug(`[DHT] announced itself ${JSON.stringify(peer)}`);
 			});
-
 			this.dht.on('warning', function(error:any){
 				Log.warning(`[DHT]`, error);
 			});
