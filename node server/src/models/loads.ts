@@ -42,22 +42,46 @@ export class Loads {
 		this.model = {};
 	}
 
-	public startUpload(id:string, torrent: Torrent){
+	public createUpload(id:string, torrent: Torrent){
 		const status: TorrentStatus = new TorrentStatus();
+		this.model[id] = status;
 		status.torrent = torrent;
 		status.promise = torrent.store();
-		this.model[id] = status;
 	}
 
-	public deleteUpload(id:string){
+	public createDownload(id:string, torrent: Torrent){
+		const status: TorrentStatus = new TorrentStatus();
+		this.model[id] = status;
+		status.torrent = torrent;
+		status.promise = torrent.resolve();
+	}
+
+	public delete(id:string){
 		this.model[id] = null;
 	}
 
-	public getUpload(id:string): TorrentStatus{
+	public get(id:string): TorrentStatus{
 		return this.model[id];
 	}
 
-	public calculateUploadStatus(id:string): number{
+	public wait(id:string): Promise<any>{
+		const status:TorrentStatus = this.model[id];
+		return new Promise<any>(function(resolve, reject){
+			try{
+				Promise.resolve(status.promise).then(function(){
+					resolve();
+				}).catch(function(err){
+					Log.error("[LOADS]",err);
+					reject(err);
+				});
+			}catch(error){
+				Log.error("[LOADS]",error);
+				reject(error);
+			}
+		});
+	}
+
+	public statusUploads(id:string): number{
 		let storedChunks: number = 0;
 		const numChunks: number = this.model[id].torrent.chunks.length;
 		this.model[id].torrent.chunks.forEach( chunk => {
@@ -69,31 +93,15 @@ export class Loads {
 		return percentage;
 	}
 
-	public startDownload(id:string, torrent: Torrent){
-		const status: TorrentStatus = new TorrentStatus();
-		status.torrent = torrent;
-		status.promise = torrent.resolve();
-		this.model[id] = status;
-	}
-
-	public deleteDownload(id:string){
-		this.model[id] = null;
-	}
-
-	public getDownloadStatus(id:string): TorrentStatus{
-		return this.model[id];
-	}
-
-	public calculateDownloadStatus(id:string): number{
-		let resolvedChunks: number = 0;
+	public statusDownloads(id:string): number{
+		let storedChunks: number = 0;
 		const numChunks: number = this.model[id].torrent.chunks.length;
 		this.model[id].torrent.chunks.forEach( chunk => {
 			if(chunk.value){
-				resolvedChunks++;
+				storedChunks++;
 			}
 		})
-		const percentage: number = resolvedChunks/numChunks;
+		const percentage: number = storedChunks/numChunks;
 		return percentage;
 	}
-
 }
