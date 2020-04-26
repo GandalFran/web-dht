@@ -7,7 +7,7 @@
     "dht": {
         "port": 5000,
         "idIface": "wifi0",
-    	"chunkSize": 900,
+    	"chunkSize": 950,
     	"bootstrapPeer": {"host": "vm1", "port":5000}
     }
 }

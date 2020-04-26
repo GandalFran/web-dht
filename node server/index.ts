@@ -19,20 +19,31 @@ Log.setLogLevel(Config.getInstance().log);
 // start the DHT 
 DHT.getInstance();
 
-//do something when app is closing
-process.on('exit', DHT.getInstance().close.bind(null));
-process.on('SIGINT', DHT.getInstance().close.bind(null));
+// register handler for exit
+process.on('exit', function (){
+	try{
+		DHT.getInstance().close();
+	}catch(err){
+		Log.info(`[DHT] the dht destroy doesn't gone properly good`);
+	}
+});
+process.on('SIGINT', function (){
+	try{
+		DHT.getInstance().close();
+	}catch(err){
+		Log.info(`[DHT] the dht destroy doesn't gone properly good`);
+	}
+});
 
 // start express application
 DHTApplication.getInstance().start();
 
-/*
 
 import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 
-const fileName = 'gif.gif';
+const fileName = 'pdf.pdf';
 
 if(Config.getInstance().dht.idIface === 'wifi0'){
 
@@ -46,12 +57,15 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 		    Log.debug(`Generating torrent for file ${path}`);
 		    torrentFile = Torrent.buildTorrentFromRegularFile(file);
 		    await torrentFile.store();
+		    console.log(torrentFile.chunks.length);
 		}catch(error){
 			Log.error("[INDEX] buildTorrentFromFile", error);
 		}
 		
 		FileSystem.renameSync(torrentFile.path, './test/prueba.torrent')
 
+		console.log(JSON.stringify(DHT.getInstance().dht.toJSON().values.length));
+		
 	}, 20000)
 
 }else{
@@ -65,6 +79,5 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 			Log.error("[INDEX] buildTorrentFromFile", error);
 		}
 
-	}, 20000)
+	}, 40000)
 }
-*/
