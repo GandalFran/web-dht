@@ -84,5 +84,5 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 			Log.error("[INDEX] buildTorrentFromFile", error);
 		}
 
-	}, 30000)
-}*/
+	}, 1580000)
+}
