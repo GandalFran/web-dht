@@ -5,11 +5,11 @@
 "use strict";
 
 import * as Express from "express";
-import WebTorrent from "webtorrent";
+import * as FileSystem from "fs";
 import { IncomingForm } from 'formidable';
 
 import { Log } from "../log";
-import { File, Torrent } from "../models/file";
+import { FileBitTorrent, Torrent } from "../models/file";
 
 
 export class FileController{
@@ -17,7 +17,7 @@ export class FileController{
     private torrent: any;
 
 	constructor(){
-        this.torrent = new WebTorrent();
+        this.torrent = null;
 	}
 
     public registerController(application: Express.Express): any {
@@ -34,15 +34,28 @@ export class FileController{
     public async create(request: Express.Request, response: Express.Response) {
         const form = new IncomingForm();
 
-        form.on('file',(field,file) => {
-            console.log(file.path);
-            this.torrent.seed(file.path,(torrentFile:any) => {
-                Log.debug(`[TORRENT] Client is seeding ${torrentFile.magnetURI}`);
-                //TODO need torrent.on for know when .torrent created
-            });
+        form.on('file',async (field,uploadedFile) => {
+            console.log("Archivo convertido");
+            const path : any = uploadedFile.path;
+		
+            try{
+                Log.debug(`Generating file ${path}`);
+                const file:FileBitTorrent = FileBitTorrent.buildFromPath(path);
+                Log.debug(`Generating torrent for file ${path}`);
+                this.torrent = Torrent.buildTorrentFromRegularFile(file);
+                await this.torrent.store();
+                console.log(this.torrent.chunks.length);
+            }catch(error){
+                Log.error("[INDEX] buildTorrentFromFile", error);
+            }
+            
+            FileSystem.renameSync(this.torrent.path, './test/'+uploadedFile.name+'.torrent');
+
+            response.send("ok");
         });
 
         try{
+            console.log("Llega mensaje");
             form.parse(request);
         }catch (e){
             Log.error("[TORRENT] an error occurred on torrent parse", e);

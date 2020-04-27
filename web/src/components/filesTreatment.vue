@@ -4,6 +4,7 @@
       <v-layout row wrap>
         <v-flex xs12>
           <v-file-input
+            id = "inputFile"
             type = "file"
             label="Click here to select file for upload"
             outlined
@@ -23,6 +24,15 @@
             left>
             Upload File
           </v-btn>
+        </v-flex>
+
+        <v-flex xs12>
+          <v-alert
+            :value="fileErrorFlag"
+            :v-bind="fileErrorMessage"
+            type="error">
+            {{ fileErrorMessage }}
+          </v-alert>
         </v-flex>
       </v-layout>
     </v-container>
@@ -125,7 +135,7 @@
         search: '',
         //upload image data
         file: null,
-        fileErrorMessage:"",
+        fileErrorMessage:null,
         fileErrorFlag: false,
         icons: {
           mdiDelete,
@@ -169,13 +179,24 @@
         console.log('click on ' + item.nombre)
       },
       async onSubmit(){ 
+            this.fileErrorMessage = null;
+            this.fileErrorFlag = false;
+
+            //Check file size
+            if(this.file.size > 1000000){
+              this.fileErrorMessage = "No es posible subir archivo de un tamaño superior a 1MB";
+              this.fileErrorFlag = true;
+              return;
+            }
+
+
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',"http://localhost:80/file/create",false);
+            req.open('POST',"http://localhost:80/torrent/create",false);
             req.send(formData);
 
-            if (req.status === 200) {
+            if (req.status == 200) {
               console.log(req.response);
             }
       }
