@@ -72,8 +72,8 @@ export class DHT {
 		try{
 			const opts = {
 				nodeId: this.dhtId,
-				host: Config.getInstance().dht.isLocal,
-				bootstrap: Config.getInstance().dht.bootstrapPeers,
+				host: Config.getInstance().dht.isPublic,
+  				bootstrap: Config.getInstance().dht.bootstrapPeers,
 			  	concurrency: 100,
 			  	timeBucketOutdated: 5000,
 				maxAge: 10000
@@ -87,18 +87,15 @@ export class DHT {
 				Log.debug(`[DHT] ready`);
 			});
 			this.dht.on('peer', function(peer:any, infoHash:any, from:any){
-				Log.debug(`[DHT] found potential peer ${JSON.stringify(peer)}`);
+				Log.debug(`[DHT] found potential peer ${peer.id.toString('base64')} on ${peer.host}:${peer.port}`);
 			});
 			this.dht.on('node', function(node:any){
-				if(!Config.getInstance().dht.isLocal){
-					Log.debug(`[DHT] find new node ${node.id.toString('utf8')} on ${node.host}:${node.port}`);
+				if(!Config.getInstance().dht.isPublic){
+					Log.debug(`[DHT] find new peer ${node.id.toString('base64')} on ${node.host}:${node.port}`);
 				}
 			});
 			this.dht.on('announce', function(peer:any, infoHash:any){
-				Log.debug(`[DHT] recived announced from ${JSON.stringify(peer)}`);
-			});
-			this.dht.on('warning', function(error:any){
-				Log.warning(`[DHT]`, error);
+				Log.debug(`[DHT] recived announce from ${peer.id.toString('base64')} on ${peer.host}:${peer.port}`);
 			});
 			this.dht.on('error', function(error:any){
 				Log.error(`[DHT]`, error);
@@ -109,27 +106,25 @@ export class DHT {
 			const id = this.dhtId;
 			this.dht.listen(Config.getInstance().dht.port, function () {
 				Log.info(`[DHT] listening on port ${Config.getInstance().dht.port}`);
-				setInterval(function(){dht.announce(id)}, 5000);
 			})
 		}catch(e){
 			Log.error('[DHT] excepccion occured on start', e);
 		}
 	}
 
-	public close(){
-		clearInterval();
-		this.dht.destroy();
+	public async close(){
+		await this.dht.destroy();
 	}
 
 	public async put(chunk: Chunk):Promise<Buffer>{
 		const dht = this.dht;
 		return new Promise<Buffer>(function(resolve, reject) {
-			dht.put({v: chunk.value, force:true}, (err:any, cid:any, nodesAccepted:any) => {
-				if(err){
-					Log.error(`[DHT] put error`, err);
-					reject(err);
+			dht.put({v: chunk.value, force:true}, (error:any, cid:any, nodesAccepted:any) => {
+				if(error){
+					Log.error(`[DHT] put error`, error);
+					reject(error);
 				}else{
-					Log.debug(`[DHT] put '${cid.toString('base64')}' success -> ${JSON.stringify(nodesAccepted)}`);
+					Log.debug(`[DHT] put '${cid.toString('base64')}' success. Accepted in ${JSON.stringify(nodesAccepted)} peers`);
 					resolve(cid);
 				}
 			});
@@ -144,16 +139,16 @@ export class DHT {
 					Log.error(`[DHT] get lookup error`, error);
 					reject(error);
 				}else{
-					dht.get(chunk.cid, (err:any, value:any) => {
-						if(err){
-							Log.error(`[DHT] get '${chunk.cid.toString('base64')}' error `, err);
-							reject(err);
+					dht.get(chunk.cid, (error:any, value:any) => {
+						if(error){
+							Log.error(`[DHT] get '${chunk.cid.toString('base64')}' error `, error);
+							reject(error);
 						}else if(value === null){
 							const error = new Error('Value not found for requested cid');
 							Log.error(`[DHT] get not found value for '${chunk.cid.toString('base64')}'`, error);
 							reject(error);
 						}else{
-							Log.debug(`[DHT] get '${chunk.cid.toString('base64')}' success from ${value.id.toString('utf8')}`);
+							Log.debug(`[DHT] get '${chunk.cid.toString('base64')}' success. Obtained from ${value.id.toString('base64')}`);
 							resolve(value.v)
 						}
 					});

@@ -19,7 +19,7 @@ export class Log {
     private static logLevel : LogLevel;
 
     private static log(msg: string) {
-        console.log(`[${Log.getDate()}] ${msg}`);
+        console.error(`[${Log.getDate()}] ${msg}`);
     }
 
     private static getDate():string {
