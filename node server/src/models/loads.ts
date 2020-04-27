@@ -12,6 +12,7 @@ import { Config } from '../config';
 import { Torrent } from '../models/file';
 
 export class TorrentStatus{
+	public id: string;
 	public torrent: Torrent;
 	public promise: Promise<any>;
 }
@@ -45,6 +46,7 @@ export class Loads {
 	public createUpload(id:string, torrent: Torrent){
 		const status: TorrentStatus = new TorrentStatus();
 		this.model[id] = status;
+		status.id = id;
 		status.torrent = torrent;
 		status.promise = torrent.store();
 	}
@@ -52,12 +54,21 @@ export class Loads {
 	public createDownload(id:string, torrent: Torrent){
 		const status: TorrentStatus = new TorrentStatus();
 		this.model[id] = status;
+		status.id = id;
 		status.torrent = torrent;
 		status.promise = torrent.resolve();
 	}
 
 	public delete(id:string){
 		this.model[id] = null;
+	}
+
+	public all(): TorrentStatus []{
+		const all: TorrentStatus[] = [];
+		Object.keys(this.model).forEach(id => {
+			all.push(this.model[id]);
+		});
+		return all;
 	}
 
 	public get(id:string): TorrentStatus{
