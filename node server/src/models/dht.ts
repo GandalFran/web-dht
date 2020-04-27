@@ -72,8 +72,8 @@ export class DHT {
 		try{
 			const opts = {
 				nodeId: this.dhtId,
-				host: false,
-  				bootstrap: [Config.getInstance().dht.bootstrapPeer],
+				host: Config.getInstance().dht.isLocal,
+  				bootstrap: Config.getInstance().dht.bootstrapPeers,
 			  	concurrency: 100,
 			  	timeBucketOutdated: 5000,
 				maxAge: 10000
@@ -90,7 +90,9 @@ export class DHT {
 				Log.debug(`[DHT] found potential peer ${JSON.stringify(peer)}`);
 			});
 			this.dht.on('node', function(node:any){
-				Log.debug(`[DHT] find new node ${node.id.toString('utf8')} on ${node.host}:${node.port}`);
+				if(!Config.getInstance().dht.isLocal){
+					Log.debug(`[DHT] find new node ${node.id.toString('utf8')} on ${node.host}:${node.port}`);
+				}
 			});
 			this.dht.on('announce', function(peer:any, infoHash:any){
 				Log.debug(`[DHT] recived announced from ${JSON.stringify(peer)}`);
