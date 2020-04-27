@@ -19,14 +19,16 @@ export class DHTConfig {
 
     public port:number;
     public idIface: string;
+    public isLocal: boolean;
     public chunkSize: number;
-    public bootstrapPeer: string;
+    public bootstrapPeers: string;
 
     constructor() {
         this.port = 0;
         this.idIface = "";
+        this.isLocal = true;
         this.chunkSize = 0;
-        this.bootstrapPeer = "";
+        this.bootstrapPeers = "";
     }
 }
 
@@ -90,8 +92,9 @@ export class Config{
         if (typeof jsonConfig === "object" && typeof jsonConfig.dht === "object") {
             config.dht.port = jsonConfig.dht.port;
             config.dht.idIface = jsonConfig.dht.idIface;
+            config.dht.isLocal = jsonConfig.dht.isLocal;
             config.dht.chunkSize = jsonConfig.dht.chunkSize;
-            config.dht.bootstrapPeer = jsonConfig.dht.bootstrapPeer;
+            config.dht.bootstrapPeers = jsonConfig.dht.bootstrapPeers;
         }
 
         Config.singletonInstance = config;

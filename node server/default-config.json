@@ -8,6 +8,7 @@
         "port": 5000,
         "idIface": "wifi0",
     	"chunkSize": 950,
-        "bootstrapPeer": false
+        "bootstrapPeer": [],
+        "isLocal": true
     }
 }
