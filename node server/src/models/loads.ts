@@ -60,6 +60,7 @@ export class Loads {
 		this.model[id] = null;
 	}
 
+	//TODO si no existe el id pasado que retorne null
 	public get(id:string): TorrentStatus{
 		return this.model[id];
 	}
@@ -90,7 +91,7 @@ export class Loads {
 			}
 		})
 		const percentage: number = storedChunks/numChunks;
-		return percentage;
+		return percentage * 100;
 	}
 
 	public statusDownloads(id:string): number{
@@ -102,6 +103,11 @@ export class Loads {
 			}
 		})
 		const percentage: number = storedChunks/numChunks;
-		return percentage;
+		return percentage * 100;
+	}
+
+	//TODO, pasar model a un array de json id status
+	public getModel(): any {
+		
 	}
 }

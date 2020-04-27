@@ -1,5 +1,5 @@
 <template>
-  <div id="firstTable">
+  <div id="searchTable">
     <v-container grid-list-xl text-xs-center>
       <v-layout row wrap>
         <v-flex xs12>
@@ -19,7 +19,7 @@
             class="futura"
             text
             color="#0f1c41"
-            @click="onSubmit()"
+            @click="onUploadClick()"
             
             left>
             Upload File
@@ -39,146 +39,77 @@
     <v-container grid-list-xl text-xs-center>
       <v-layout row wrap>
         <v-flex xs12>
-          <v-card class="mx-auto">
-            <v-card-title color="#0f1c41">
-              Downloading Files
-              <v-spacer></v-spacer>
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-              ></v-text-field>
-            </v-card-title>
+          <v-file-input
+            id = "inputTorrent"
+            type = "file"
+            label="Click here to select torrent for fownload"
+            outlined
+            v-model="torrentFile"
+          >
+          </v-file-input>
+        </v-flex>
 
-            <v-data-table
-              :headers="headers"
-              :items="files"
-              :items-per-page="10"
-              class="downloadingFiles"
-            >
-                <template 
-                  v-slot:item="row">
-                  <tr>
-                  <td>{{row.item.nombre}}</td>
-                  <td>{{row.item.tamaño}}</td>
-                  <td>{{row.item.velocidadDescarga}}</td>
-                  <td>{{row.item.porcentajeDescargado}}</td>
-                </tr>
-                </template>
-            </v-data-table>
-          </v-card>
-        </v-flex>>
-      </v-layout>
-    </v-container>
-    <v-container grid-list-xl text-xs-center>
-      <v-layout row wrap>
         <v-flex xs12>
-          <v-card class="mx-auto">
-            <v-card-title color="#0f1c41">
-              Downloaded Files
-              <v-spacer></v-spacer>
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-              ></v-text-field>
-            </v-card-title>
+          <v-btn
+            id="okFileButton"
+            class="futura"
+            text
+            color="#0f1c41"
+            @click="onDownloadClick()"
+            
+            left>
+            Download File
+          </v-btn>
+        </v-flex>
 
-            <v-data-table
-              :headers="headersDownloaded"
-              :items="filesDownloaded"
-              :items-per-page="10"
-              class="downloadedFiles"
-            >
-              <template
-                v-slot:item="row">
-
-                <tr>
-                  <td>{{row.item.nombre}}</td>
-                  <td>
-                    <v-btn
-                      class = "mx-2"
-                      color = "#000000"
-                      dark
-                      icon
-                      left
-                      small
-                      @click="onButtonClick(row.item)">
-                      <v-icon>{{ icons.mdiDelete }}</v-icon>
-                      Delete
-                    </v-btn>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-flex>>
+        <v-flex xs12>
+          <v-alert
+            :value="torrentErrorFlag"
+            :v-bind="torrentErrorMessage"
+            type="error">
+            {{ torrentErrorMessage }}
+          </v-alert>
+        </v-flex>
       </v-layout>
     </v-container>
   </div>
 </template>
 
 <script>
-  import {
-    mdiDelete,
-  } from '@mdi/js'
-
-  //import axios from 'axios';
 
   export default {
     data () {
       return {
-        search: '',
         //upload image data
         file: null,
         fileErrorMessage:null,
         fileErrorFlag: false,
-        icons: {
-          mdiDelete,
-        },
-        headers: [
-          {
-            text: 'Nombre',
-            align: 'start',
-            sortable: false,
-            value: 'nombre',
-          },
-          { text: 'Tamaño', value: 'tamaño' },
-          { text: 'Vel. Descarga', value: 'velocidadDescarga' },
-          { text: 'Descargado (%)', value: 'porcentajeDescargado' },
-        ],
-        files: [
-          {
-            nombre: 'XXX',
-            tamaño: '100 MB',
-            velocidadDescarga: '10 MB/s',
-            porcentajeDescargado: '1%',
-          },
-        ],
-        headersDownloaded: [
-          {
-            text: 'Nombre',
-            align: 'start',
-            sortable: false,
-            value: 'nombre',
-          },
-        ],
-        filesDownloaded: [
-          {
-            nombre: 'XXX',
-          },
-        ],
+        //Upload torrent
+        torrentFile: null,
+        torrentErrorMessage: null,
+        torrentErrorFlag: null,
       }
     },
     methods: {
-      onButtonClick(item) {
-        console.log('click on ' + item.nombre)
+      onDownloadClick() {
+            this.torrentErrorMessage = null;
+            this.torrentErrorFlag = false;
+
+            const req = new XMLHttpRequest();
+            const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
+            formData.append('file',this.file);
+            req.open('POST',"http://localhost:80/torrent/retrieve",false);
+            req.send(formData);
+
+            if (req.status == 200) {
+              console.log(req.response);
+            }else{
+              this.torrentErrorMessage = "El archivo que se quiere descargar no es correcto";
+              this.torrentErrorFlag = true;
+              return;
+            }
       },
-      async onSubmit(){ 
+      onUploadClick(){ 
             this.fileErrorMessage = null;
             this.fileErrorFlag = false;
 
@@ -189,7 +120,6 @@
               return;
             }
 
-
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
@@ -199,13 +129,7 @@
             if (req.status == 200) {
               console.log(req.response);
             }
-      }
+      },
     }
   }
 </script>
-
-<style>
-#uploadFileButtomIcon {
-    margin-left: 10px;
-}
-</style>

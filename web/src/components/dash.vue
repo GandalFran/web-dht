@@ -10,9 +10,9 @@
                             text
                             class="toolbar"
                             color="#0f1c41"
-                            to="/filesTreatment"
+                            to="/statusFiles"
                         >
-                            Files
+                            Status
                         </v-btn>
                     </v-col>
                     <v-col cols="12" sm="3">
@@ -20,9 +20,9 @@
                             text
                             class="toolbar"
                             color="#0f1c41"
-                            to="/searchingFiles"
+                            to="/filesTreatment"
                         >
-                            Search
+                            Files
                         </v-btn>
                     </v-col>
                 </v-toolbar-items>
@@ -38,8 +38,8 @@ export default {
     data() {
         return {
             items: [
-                { path: "/#/", title: "Files" },
-                { path: "/#/searchingFiles", title: "SearchingFiles" }
+                { path: "/#/", title: "Status" },
+                { path: "/#/filesTreatment", title: "Files" }
             ],
             locationWindow: null,
             on: false

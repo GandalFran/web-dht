@@ -4,7 +4,7 @@ import Router from 'vue-router'
 //Import components
 import Dash from "./components/dash"
 import FilesTreatment from "./components/filesTreatment"
-import SearchingFiles from "./components/searchingFiles"
+import StatusFiles from "./components/statusFiles"
 
 Vue.use(Router)
 
@@ -18,18 +18,18 @@ var router = new Router({
         {
             path: '/dash',
             name: 'dash',
-            redirect:{name:'filesTreatment'},
+            redirect:{name:'statusFiles'},
             component: Dash,
             children: [
+                {
+                    path: '/statusFiles',
+                    name: 'statusFiles',
+                    component: StatusFiles
+                },
                 {
                     path: '/filesTreatment',
                     name: 'filesTreatment',
                     component: FilesTreatment
-                },
-                {
-                    path: '/searchingFiles',
-                    name: 'searchingFiles',
-                    component: SearchingFiles
                 }
             ]
         }
