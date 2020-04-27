@@ -8,7 +8,8 @@
         "port": 5000,
         "idIface": "wifi0",
     	"chunkSize": 950,
-    	"bootstrapPeer": [],
-        "isLocal": true
+    	"bootstrapPeers": [{"host":"vm1", "port":5000}],
+        "isPublic": true,
+        "numAttemps": 100
     }
 }

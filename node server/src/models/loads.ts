@@ -64,21 +64,27 @@ export class Loads {
 		return this.model[id];
 	}
 
-	public wait(id:string): Promise<any>{
+	private waitOne(id:string): Promise<any>{
 		const status:TorrentStatus = this.model[id];
 		return new Promise<any>(function(resolve, reject){
-			try{
-				Promise.resolve(status.promise).then(function(){
-					resolve();
-				}).catch(function(err){
-					Log.error("[LOADS]",err);
-					reject(err);
-				});
-			}catch(error){
-				Log.error("[LOADS]",error);
-				reject(error);
-			}
+			Promise.resolve(status.promise).then(function(){
+				resolve();
+			}).catch(function(err){
+				Log.error("[LOADS]",err);
+				reject(err);
+			});
 		});
+	}
+
+	public async wait(id:string){
+		var resolved: boolean = false;
+		for(var attemp = 0; attemp < Config.getInstance().dht.numAttemps && !resolved; attemp++){
+			await Promise.resolve(this.get(id).promise).then(function(){
+				resolved = true;
+			}).catch(function(error){
+				Log.error(`[LOADS] error on attemp ${attemp}`,error);
+			});
+		}
 	}
 
 	public statusUploads(id:string): number{
