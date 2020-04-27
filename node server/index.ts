@@ -40,7 +40,7 @@ process.on('SIGINT', function (){
 DHTApplication.getInstance().start();
 
 
-import * as FileSystem from "fs";
+/*import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { File, Torrent } from "./src/models/file";
 import { Loads } from "./src/models/loads";
@@ -86,4 +86,4 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 		}
 
 	}, 40000)
-}
+}*/

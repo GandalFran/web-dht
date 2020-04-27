@@ -73,7 +73,7 @@ export class DHT {
 			const opts = {
 				nodeId: this.dhtId,
 				host: false,
-  				bootstrap: [Config.getInstance().dht.bootstrapPeer],
+  				bootstrap: Config.getInstance().dht.bootstrapPeer,
 			  	concurrency: 100,
 			  	timeBucketOutdated: 5000,
 				maxAge: 10000

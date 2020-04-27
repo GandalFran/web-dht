@@ -13,7 +13,7 @@ import { Log } from "../log"
 import { Chunk } from "./chunk"
 import { Config } from "../config"
 
-export class File {
+export class FileBitTorrent {
 
 	public name:string;
 	public path:string;
@@ -26,15 +26,15 @@ export class File {
 	}
 
 	public static buildFromPath(path:string) {
-		const file:File = new File();
+		const file:FileBitTorrent = new FileBitTorrent();
 		file.name = path;
 		file.path = path;
 		file.read();
 		return file;
 	}
 
-	public static buildFromChunks(path:string, chunks:Chunk[]): File {
-		const file:File = new File();
+	public static buildFromChunks(path:string, chunks:Chunk[]): FileBitTorrent {
+		const file:FileBitTorrent = new FileBitTorrent();
 		file.name = path;
 		file.path = path;
 		file.join(chunks);
@@ -79,18 +79,18 @@ export class File {
 }
 
 
-export class Torrent extends File{
+export class Torrent extends FileBitTorrent{
 
-	public file:File;
+	public file:FileBitTorrent;
 	public chunks:Chunk[];
 
 	constructor(){
 		super()
-		this.file = new File();
+		this.file = new FileBitTorrent();
 		this.chunks = [];
 	}
 
-	public static buildTorrentFromRegularFile(file: File): Torrent{
+	public static buildTorrentFromRegularFile(file: FileBitTorrent): Torrent{
 		const torrent: Torrent = new Torrent();
 
 		// buld torrent file object
@@ -139,7 +139,7 @@ export class Torrent extends File{
 				}
 			});
 			Promise.all(promises).then(function(){
-				torrent.file = File.buildFromChunks(torrent.file.path, torrent.chunks)
+				torrent.file = FileBitTorrent.buildFromChunks(torrent.file.path, torrent.chunks)
 				resolve();
    			}).catch(function(error){
    				reject(error);
