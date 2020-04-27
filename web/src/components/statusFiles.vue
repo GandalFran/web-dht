@@ -133,13 +133,16 @@
         console.log(req.response);
         //Check if they are downloaded files
         const responseDownloads = req.response;
-        responseDownloads.forEach(element => {
-          if(element.percentage == 100){
-            this.filesDownloaded.push(element);
-          }else{
-            this.files.push(element);
-          }
-        });
+
+        if(responseDownloads.length == 0){
+          responseDownloads.forEach(element => {
+            if(element.percentage == 100){
+              this.filesDownloaded.push(element);
+            }else{
+              this.files.push(element);
+            }
+          });
+        }
 
         this.intervalRetreaving();
       }
@@ -167,33 +170,37 @@
             console.log(req.response);
             //Check if they are downloaded files
             const responseDownloads = req.response;
-            responseDownloads.forEach(element => {
-              if(element.percentage == 100){
-                //Check if it is in downloading files
-                let pos = this.filesDownloaded.map(function(e){return e.id}).indexof(element.id);
 
-                if(pos == -1){//Here it doesn´t exist in downloaded files
-                  //check if exists in downloading files
-                  pos = this.files.map(function(e){return e.id}).indexof(element.id);
-                  if(pos != -1){//Delete from downloading files and add it to downloaded files
-                    this.files.slice(pos,1);
+            if(responseDownloads.length > 0){
+              responseDownloads.forEach(element => {
+                if(element.percentage == 100){
+                  //Check if it is in downloading files
+                  let pos = this.filesDownloaded.map(function(e){return e.id}).indexof(element.id);
+
+                  if(pos == -1){//Here it doesn´t exist in downloaded files
+                    //check if exists in downloading files
+                    pos = this.files.map(function(e){return e.id}).indexof(element.id);
+                    if(pos != -1){//Delete from downloading files and add it to downloaded files
+                      this.files.slice(pos,1);
+                    }
+                    //Add it with nothing to do if it doesn´t exists
+                    this.filesDownloaded.push(element);
                   }
-                  //Add it with nothing to do if it doesn´t exists
-                  this.filesDownloaded.push(element);
-                }
-                //In case it exists nothing to do
-              }else{
-                //In this case check only in downloading files
-                let pos = this.files.map(function(e){return e.id}).indexof(element.id);
+                  //In case it exists nothing to do
+                }else{
+                  //In this case check only in downloading files
+                  let pos = this.files.map(function(e){return e.id}).indexof(element.id);
 
-                if(pos == -1){//It doesn´t exist, add it
-                  this.files.push(element);
-                }else{ //Change the element for the new data
-                  this.files[pos] = element;
+                  if(pos == -1){//It doesn´t exist, add it
+                    this.files.push(element);
+                  }else{ //Change the element for the new data
+                    this.files[pos] = element;
+                  }
+                  
                 }
-                
-              }
-            });
+              });
+            }
+
           }
         },2000);
       }

@@ -28,11 +28,11 @@ export class FileController{
     public async status(request: Express.Request, response: Express.Response) {
         const downloadsInstance: Loads = Loads.getDownloadsInstance();
         let responseDownloads: any [] = [];
-        downloadsInstance.getModel().forEach(element => {
+        downloadsInstance.all().forEach(element => {
             const percentage: Number = downloadsInstance.statusDownloads(element.id);
             const response: any = {
                 id: element.id, 
-                name: element.status.torrent.name, 
+                name: element.torrent.name, 
                 percentage: percentage
             };
             responseDownloads.push(response);

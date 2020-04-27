@@ -121,9 +121,4 @@ export class Loads {
 		const percentage: number = storedChunks/numChunks;
 		return percentage * 100;
 	}
-
-	//TODO, pasar model a un array de json id status
-	public getModel(): any {
-		
-	}
 }
