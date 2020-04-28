@@ -2,13 +2,13 @@
     "log": "DEBUG",
     "http": {
         "port": 80,
-        "addr": "localhost"
+        "addr": "0.0.0.0"
     },
     "dht": {
         "port": 5000,
         "idIface": "wifi0",
     	"chunkSize": 950,
-    	"bootstrapPeers": [],
+    	"bootstrapPeer": [],
         "isPublic": true,
         "numAttemps": 100
     }

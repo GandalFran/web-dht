@@ -23,29 +23,31 @@ DHT.getInstance();
 DHTApplication.getInstance().start();
 
 // register handler for exit and destroy dht
-/*process.on('exit', function (){
+/*
+process.on('exit', async function (){
 	try{
-		DHT.getInstance().close();
+		await DHT.getInstance().close();
 	}catch(err){
 		Log.info(`[DHT] the dht destroy doesn't gone properly good`);
 	}
 });
-process.on('SIGINT', function (){
+process.on('SIGINT', async function (){
 	try{
-		DHT.getInstance().close();
+		await DHT.getInstance().close();
 	}catch(err){
 		Log.info(`[DHT] the dht destroy doesn't gone properly good`);
 	}
-});*/
+});
+*/
 
-
-/*import * as FileSystem from "fs";
+/*
+import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
-import { File, Torrent } from "./src/models/file";
+import { FileBitTorrent, Torrent } from "./src/models/file";
 import { Loads } from "./src/models/loads";
 
 
-const fileName = 'texto.txt';
+const fileName = 'video.mp4';
 
 if(Config.getInstance().dht.idIface === 'wifi0'){
 
@@ -55,7 +57,7 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 		
 		try{
 		    Log.debug(`Generating file ${path}`);
-			const file:File = File.buildFromPath(path);
+			const file:FileBitTorrent = FileBitTorrent.buildFromPath(path);
 		    Log.debug(`Generating torrent for file ${path}`);
 		    torrentFile = Torrent.buildTorrentFromRegularFile(file);
 
@@ -72,7 +74,7 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 
 }else{
 	setTimeout(async function(){
-		const torrentPath:string = './test/prueba.torrent';
+		const torrentPath:string = './test/pruebaVideo.torrent';
 		try{
 		   	Log.debug(`Reading torreng from torrent file ${torrentPath}`);
 		    const torrentFile2: Torrent = Torrent.buildTorrentFromTorrentFile(torrentPath);
@@ -85,4 +87,4 @@ if(Config.getInstance().dht.idIface === 'wifi0'){
 		}
 
 	}, 1580000)
-}
+}*/

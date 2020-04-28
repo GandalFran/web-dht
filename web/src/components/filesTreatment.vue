@@ -123,7 +123,7 @@
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',"http://localhost:80/torrent/create",false);
+            req.open('POST',"http://localhost:80/upload/create",false);
             req.send(formData);
 
             if (req.status == 200) {

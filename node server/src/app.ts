@@ -15,8 +15,8 @@ import * as BodyParser from 'body-parser';
 import { Log } from "./log";
 import { Config } from "./config";
 import { HTTP_COOKIE_SECRET } from "./util/http";
-import { StatusController } from "./controllers/statusController";
-import { FileController } from "./controllers/fileController";
+import { DownloadsController } from "./controllers/downloadsController";
+import { UploadsController } from "./controllers/uploadsController";
 
 
 export class DHTApplication {
@@ -55,10 +55,10 @@ export class DHTApplication {
     }
 
     private registerControllers() {
-        const statusController = new StatusController();
-        const fileController = new FileController();
+        const uploadsController = new UploadsController();
+        const downloadsController = new DownloadsController();
 
-        statusController.registerController(this.application);
-        fileController.registerController(this.application);
+        uploadsController.registerController(this.application);
+        downloadsController.registerController(this.application);
     }
 }

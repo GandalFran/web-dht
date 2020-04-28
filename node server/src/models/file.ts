@@ -6,7 +6,6 @@
 
 import * as FileSystem from "fs";
 import * as ParseTorrent from 'parse-torrent';
-import CreateTorrent = require('create-torrent');
 
 
 import { Log } from "../log"
@@ -25,7 +24,7 @@ export class FileBitTorrent {
 		this.content = null;
 	}
 
-	public static buildFromPath(path:string) {
+	public static buildFromPath(path:string) : FileBitTorrent{
 		const file:FileBitTorrent = new FileBitTorrent();
 		file.name = path;
 		file.path = path;

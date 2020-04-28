@@ -87,15 +87,15 @@ export class DHT {
 				Log.debug(`[DHT] ready`);
 			});
 			this.dht.on('peer', function(peer:any, infoHash:any, from:any){
-				Log.debug(`[DHT] found potential peer ${peer.id.toString('base64')} on ${peer.host}:${peer.port}`);
+				Log.debug(`[DHT] found potential peer on ${peer.host}:${peer.port}`);
 			});
 			this.dht.on('node', function(node:any){
 				if(!Config.getInstance().dht.isPublic){
-					Log.debug(`[DHT] find new peer ${node.id.toString('base64')} on ${node.host}:${node.port}`);
+					Log.debug(`[DHT] found new peer on ${node.host}:${node.port}`);
 				}
 			});
 			this.dht.on('announce', function(peer:any, infoHash:any){
-				Log.debug(`[DHT] recived announce from ${peer.id.toString('base64')} on ${peer.host}:${peer.port}`);
+				Log.debug(`[DHT] recived announce from ${peer.host}:${peer.port}`);
 			});
 			this.dht.on('error', function(error:any){
 				Log.error(`[DHT]`, error);
