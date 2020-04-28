@@ -23,7 +23,7 @@ DHT.getInstance();
 DHTApplication.getInstance().start();
 
 // register handler for exit and destroy dht
-process.on('exit', function (){
+/*process.on('exit', function (){
 	try{
 		DHT.getInstance().close();
 	}catch(err){
@@ -36,7 +36,7 @@ process.on('SIGINT', function (){
 	}catch(err){
 		Log.info(`[DHT] the dht destroy doesn't gone properly good`);
 	}
-});
+});*/
 
 
 /*import * as FileSystem from "fs";
