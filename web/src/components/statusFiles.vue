@@ -134,7 +134,7 @@
         //Check if they are downloaded files
         const responseDownloads = req.response;
 
-        if(responseDownloads.length == 0){
+        if(responseDownloads.length > 0){
           responseDownloads.forEach(element => {
             if(element.percentage == 100){
               this.filesDownloaded.push(element);
