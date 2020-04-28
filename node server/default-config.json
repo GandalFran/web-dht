@@ -10,6 +10,7 @@
     	"chunkSize": 950,
     	"bootstrapPeer": [],
         "isPublic": true,
-        "numAttemps": 100
+        "numAttemps": 100,
+        "temporalFiles": "/home/gandalfran/tempDht"
     }
 }

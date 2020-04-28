@@ -24,17 +24,17 @@ export class FileBitTorrent {
 		this.content = null;
 	}
 
-	public static buildFromPath(path:string) : FileBitTorrent{
+	public static buildFromPath(path:string, name:string) : FileBitTorrent{
 		const file:FileBitTorrent = new FileBitTorrent();
-		file.name = path;
+		file.name = name;
 		file.path = path;
 		file.read();
 		return file;
 	}
 
-	public static buildFromChunks(path:string, chunks:Chunk[]): FileBitTorrent {
+	public static buildFromChunks(path:string, name:string, chunks:Chunk[]): FileBitTorrent {
 		const file:FileBitTorrent = new FileBitTorrent();
-		file.name = path;
+		file.name = name;
 		file.path = path;
 		file.join(chunks);
 		file.write();
@@ -101,10 +101,12 @@ export class Torrent extends FileBitTorrent{
 		return torrent;
 	}
 
-	public static buildTorrentFromTorrentFile(path: string): Torrent{
+	public static buildTorrentFromTorrentFile(path: string, filePath:string, fileNamePrefix:string): Torrent{
 		const torrent:Torrent = new Torrent();
 		torrent.name = path;
 		torrent.path = path;
+		torrent.file.path = filePath;
+		torrent.file.name = fileNamePrefix;
 		torrent.parseTorrentContent();
 		return torrent;
 	}
@@ -138,7 +140,7 @@ export class Torrent extends FileBitTorrent{
 				}
 			});
 			Promise.all(promises).then(function(){
-				torrent.file = FileBitTorrent.buildFromChunks(torrent.file.path, torrent.chunks)
+				torrent.file = FileBitTorrent.buildFromChunks(torrent.file.path, torrent.file.name, torrent.chunks)
 				resolve();
    			}).catch(function(error){
    				reject(error);
@@ -149,7 +151,7 @@ export class Torrent extends FileBitTorrent{
 	private buildTorrentContent(): any{
 		const torrentInfo:any = {
 			name: this.file.name,
-			path: this.file.path,
+			path: this.file.name,
 			created: new Date(),
 			comment: 'created during the final days of humanity after the arrival of covid19',
 			files: [{
@@ -180,8 +182,8 @@ export class Torrent extends FileBitTorrent{
 		// parse content
 		const torrentInfo:any = JSON.parse(this.content.toString('utf-8'));
 
-		this.file.path = torrentInfo.info.name;
-		this.file.name = torrentInfo.info.path;
+		this.file.name = torrentInfo.info.name;
+		this.file.path = this.file.path + '/' + this.file.name + torrentInfo.info.name;
 		for(var i=0; i<torrentInfo.info.pieces.length; i++){
 			const piece = torrentInfo.info.pieces[i];
 			this.chunks.push(Chunk.buildWithCid(Buffer.from(piece, 'base64')));

@@ -23,6 +23,7 @@ export class DHTConfig {
     public chunkSize: number;
     public numAttemps: number;
     public bootstrapPeers: string;
+    public temporalFiles: string;
 
     constructor() {
         this.port = 0;
@@ -30,6 +31,7 @@ export class DHTConfig {
         this.isPublic = false;
         this.chunkSize = 0;
         this.numAttemps = 0;
+        this.temporalFiles = "";
         this.bootstrapPeers = "";
     }
 }
@@ -97,6 +99,7 @@ export class Config{
             config.dht.isPublic = jsonConfig.dht.isPublic;
             config.dht.chunkSize = jsonConfig.dht.chunkSize;
             config.dht.numAttemps = jsonConfig.dht.numAttemps;
+            config.dht.temporalFiles = jsonConfig.dht.temporalFiles;
             config.dht.bootstrapPeers = jsonConfig.dht.bootstrapPeers;
         }
 
