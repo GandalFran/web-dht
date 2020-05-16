@@ -61,6 +61,7 @@ export class DownloadsController{
     public async createdownload(request: Express.Request, response: Express.Response) {
         const form = new IncomingForm();
 
+        Log.info('recived download request')
         form.on('file',async (field, uploadedFile) => {
             const id: string = this.model.id();
  

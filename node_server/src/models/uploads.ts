@@ -85,7 +85,7 @@ export class Uploads {
 	}
 
     /**
-     * To delete a upload from model.
+     * To delete an upload from model.
      * @param id the upload's id
      */
 	public delete(id:string){
