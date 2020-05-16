@@ -182,23 +182,23 @@
         }
       },
       onDownloadClick(item){
-        console.log('click on ' + item.nombre);
+        console.log('click on ' + item.name);
         const req = new XMLHttpRequest();
         req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/torrent",false);
         req.send(JSON.stringify({id: item.id}));
         console.log({id: item.id})
         console.log("He enviado petición para eliminar");
-        if (req.status == 200 && req.response == true) { // Here delete from downloaded files
+        if (req.status == 200) { // Here delete from downloaded files
           console.log("He recibido confirmación");
           console.log(req.response);
+
           //Create link for download
-          /*
-          const url = window.URL.createObjectURL(new Blob([req.response.data]))
+          const url = window.URL.createObjectURL(new Blob([req.response]))
           const link = document.createElement('a')
           link.href = url
-          link.setAttribute('download', 'file.png') //or any other extension
+          link.setAttribute('download', `${item.name}.torrent`) //or any other extension
           document.body.appendChild(link)
-          link.click()*/
+          link.click()
         }
       },
       intervalRetreaving(){

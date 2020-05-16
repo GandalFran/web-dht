@@ -107,13 +107,20 @@ export class UploadsController{
      * @param response express' response object
      */
     public async gettorrent(request: Express.Request, response: Express.Response) {
-        const id: any = request.query.id || null;
+        const id: string = JSON.parse(request.body).id || null;
         const upload:Upload = this.model.get(id);
+
+        console.log(id)
 
         if(upload){
             response.status(STATUS_OK);
-            response.sendFile(upload.torrent.path, function(error){
-                Log.error(`[UPLOADS CONTROLLER] `, error);
+            response.download(upload.torrent.path, upload.torrent.name, function(error){
+                if(error){
+                    console.error(upload.torrent.path)
+                    console.error(upload.torrent.name)
+                    console.error(error)
+                    Log.error(`[UPLOADS CONTROLLER] `, error);
+                }
             });
         }else{
             response.status(STATUS_INTERNAL_SERVER_ERROR);

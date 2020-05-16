@@ -125,8 +125,11 @@ var Downloads = /** @class */ (function () {
      * @param id the download's id
      */
     Downloads.prototype.delete = function (id) {
-        if (id in this.model)
-            this.model[id] = null;
+        try {
+            delete this.model[id];
+        }
+        catch (error) {
+        }
     };
     /**
      * To obtain all downloads from model.

@@ -160,12 +160,18 @@ var UploadsController = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var id, upload;
             return __generator(this, function (_a) {
-                id = request.query.id || null;
+                id = JSON.parse(request.body).id || null;
                 upload = this.model.get(id);
+                console.log(id);
                 if (upload) {
                     response.status(http_1.STATUS_OK);
-                    response.sendFile(upload.torrent.path, function (error) {
-                        log_1.Log.error("[UPLOADS CONTROLLER] ", error);
+                    response.download(upload.torrent.path, upload.torrent.name, function (error) {
+                        if (error) {
+                            console.error(upload.torrent.path);
+                            console.error(upload.torrent.name);
+                            console.error(error);
+                            log_1.Log.error("[UPLOADS CONTROLLER] ", error);
+                        }
                     });
                 }
                 else {
