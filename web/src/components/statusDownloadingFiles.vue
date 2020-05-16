@@ -25,8 +25,8 @@
                 <template 
                   v-slot:item="row">
                   <tr>
-                  <td>{{row.item.nombre}}</td>
-                  <td>{{row.item.porcentajeDescargado}}%</td>
+                  <td>{{row.item.name}}</td>
+                  <td>{{row.item.percentage}}%</td>
                 </tr>
                 </template>
             </v-data-table>
