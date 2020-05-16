@@ -89,8 +89,10 @@ export class Downloads {
      * @param id the download's id
      */
 	public delete(id:string){
-		if(id in this.model)
-			this.model[id] = null;
+		try{
+			delete this.model[id];
+		}catch(error){
+		}
 	}
 
     /**
