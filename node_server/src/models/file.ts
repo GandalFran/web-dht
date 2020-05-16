@@ -153,6 +153,10 @@ export class Torrent extends FileBitTorrent{
 		return torrent;
 	}
 
+	/**
+	 * Stores the file contained in file attribute into the DHT.
+	 * @return a promises that will be fullfillmed when the file is stored into the DHT.
+	 */
 	public async store() : Promise<any>{
 		const torrent = this;
 	   	return new Promise<any>(function(resolve, reject){
@@ -172,6 +176,10 @@ export class Torrent extends FileBitTorrent{
 	   	});
 	}
 
+	/**
+	 * Retrieves a file from the DHT, resolving the list of fil chunks and building a file with the resolved chunks.
+	 * @return a file obtained from joining the chunks retrieved from the DHT.
+	 */
 	public async resolve() : Promise<any>{
 		const torrent = this;
 	   	return new Promise<any>(function(resolve, reject){
@@ -190,6 +198,10 @@ export class Torrent extends FileBitTorrent{
 	   	});
 	}
 
+	/**
+	 * Builds a torrent file content from the file and chunks attribute.
+	 * @return the torrent file format.
+	 */
 	private buildTorrentContent(): any{
 		const torrentInfo:any = {
 			name: this.file.name,
@@ -216,6 +228,9 @@ export class Torrent extends FileBitTorrent{
 		this.content = Buffer.from(JSON.stringify({info:torrentInfo}));
 	}
 
+	/**
+	 * Parses torrent file's content, and buils the array of chunks.
+	 */
 	private parseTorrentContent(){
 		// read if content not loaded
 		if(!this.content){

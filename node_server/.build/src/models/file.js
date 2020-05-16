@@ -183,6 +183,10 @@ var Torrent = /** @class */ (function (_super) {
         torrent.parseTorrentContent();
         return torrent;
     };
+    /**
+     * Stores the file contained in file attribute into the DHT.
+     * @return a promises that will be fullfillmed when the file is stored into the DHT.
+     */
     Torrent.prototype.store = function () {
         return __awaiter(this, void 0, void 0, function () {
             var torrent;
@@ -206,6 +210,10 @@ var Torrent = /** @class */ (function (_super) {
             });
         });
     };
+    /**
+     * Retrieves a file from the DHT, resolving the list of fil chunks and building a file with the resolved chunks.
+     * @return a file obtained from joining the chunks retrieved from the DHT.
+     */
     Torrent.prototype.resolve = function () {
         return __awaiter(this, void 0, void 0, function () {
             var torrent;
@@ -228,6 +236,10 @@ var Torrent = /** @class */ (function (_super) {
             });
         });
     };
+    /**
+     * Builds a torrent file content from the file and chunks attribute.
+     * @return the torrent file format.
+     */
     Torrent.prototype.buildTorrentContent = function () {
         var torrentInfo = {
             name: this.file.name,
@@ -251,6 +263,9 @@ var Torrent = /** @class */ (function (_super) {
         });
         this.content = Buffer.from(JSON.stringify({ info: torrentInfo }));
     };
+    /**
+     * Parses torrent file's content, and buils the array of chunks.
+     */
     Torrent.prototype.parseTorrentContent = function () {
         // read if content not loaded
         if (!this.content) {

@@ -5,11 +5,15 @@
 # ================================================== #
 
 web_folder="../web"
-node_folder="../node server"
+server_folder="../node_server"
+web_config_file="$web_folder/src/variables/variables.js"
+web_config_file_template="$web_folder/src/variables/template_variables.js"
 
 installation_folder="/opt/dht"
-final_web_foler="$installation_folder/web"
-final_node_foler="$installation_folder/node"
+final_server_foler="$installation_folder/server"
+
+# TODO: don't ever think in changing this constant or you will suffer of covaids
+_deploy_folder="../deploy"
 
 # ================================================== #
 # 					  utils							 #
@@ -46,8 +50,22 @@ clean_file(){
 }
 
 # deploy utils
+replace_host_in_file(){
+	host=$1
+	sed 's/DHT_HOST/$host/g' $web_config_file_template > $web_config_file
+}
+
+build_web_for_node(){
+	host=$1
+	cd $web_folder
+	replace_host_in_file $host
+	npm run build
+	cd $_deploy_folder
+}
+
 deploy_one_machine(){
 	user_host=$1
+	host=$2
 
 	# install deploy tools
 	echo "installing pm2 ..."
@@ -57,15 +75,16 @@ deploy_one_machine(){
 	echo "preparing folders ..."
 	remote_exec $user_host "mkdir -p $installation_folder"
 
-	# copy web and server
+	# prepare web for current host
+	build_web_for_node $host
+
+	# copy server
 	echo "installing web and server ..."
-	copy_file $user_host "$web_folder/dist" "$final_web_foler"
-	copy_file $user_host "$node_folder/.build" "$final_node_foler"
+	copy_file $user_host "$server_folder/.build" "$final_server_foler"
 
 	# start pm2 services
 	echo "configuring pm2 ..."
-	remote_exec $user_host "pm2 start $final_web_foler/server.js --log /var/log/dht_web.log --name dht_web"
-	remote_exec $user_host "pm2 start $final_node_foler/index.js --log /var/log/dht_server.log --name dht_server"
+	remote_exec $user_host "pm2 start $final_server_foler/index.js --log /var/log/dht.log --name dht_server"
 	remote_exec $user_host "pm2 startup"
 }
 
@@ -73,11 +92,9 @@ clean_one_machine(){
 	user_host=$1
 
 	# stop application and server
-	remote_exec $user_host "pm2 stop dht_web"
 	remote_exec $user_host "pm2 stop dht_server"
 
 	# delete from pm2 application and server
-	remote_exec $user_host "pm2 delete dht_web"
 	remote_exec $user_host "pm2 delete dht_server"
 
 	# clean instalation folder
@@ -150,11 +167,11 @@ do
 
 			# deploy in each host
 			echo "deploying on $host1 ..."
-			deploy_one_machine $user_host1
+			deploy_one_machine $user_host1 $host1
 			echo "deploying on $host2 ..."
-			deploy_one_machine $user_host2
+			deploy_one_machine $user_host2 $host2
 			echo "deploying on $host3 ..."
-			deploy_one_machine $user_host3
+			deploy_one_machine $user_host3 $host3
 
 			# wait for dht to deploy
 			echo "sleep 5 seconds to allow dht to start properly ..."
