@@ -103,12 +103,14 @@ var DownloadsController = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 form = new formidable_1.IncomingForm();
+                console.log(request);
                 log_1.Log.info('recived download request');
                 form.on('file', function (field, uploadedFile) { return __awaiter(_this, void 0, void 0, function () {
                     var id, path, fileNamePrefix, filePath, torrent;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
+                                log_1.Log.info('recived file');
                                 id = this.model.id();
                                 path = config_1.Config.getInstance().dht.temporalFiles + '/' + id + '_' + uploadedFile.name;
                                 FileSystem.renameSync(uploadedFile.path, path);
@@ -120,9 +122,10 @@ var DownloadsController = /** @class */ (function () {
                                 response.contentType(http_1.CONTENT_APPLICATION_JSON);
                                 response.json({ "id": id });
                                 // wait after the response has been send
+                                log_1.Log.info("started download");
+                                log_1.Log.info("f");
                                 return [4 /*yield*/, this.model.get(id).wait()];
                             case 1:
-                                // wait after the response has been send
                                 _a.sent();
                                 log_1.Log.info("the download of " + this.model.get(id).torrent.path + " on " + this.model.get(id).torrent.file.name + " finished.");
                                 return [2 /*return*/];
@@ -130,6 +133,7 @@ var DownloadsController = /** @class */ (function () {
                     });
                 }); });
                 form.parse(request);
+                log_1.Log.info("he salido");
                 return [2 /*return*/];
             });
         });
@@ -138,7 +142,7 @@ var DownloadsController = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var id;
             return __generator(this, function (_a) {
-                id = request.body.id;
+                id = JSON.parse(request.body).id || null;
                 this.model.delete(id);
                 response.status(http_1.STATUS_OK);
                 response.contentType(http_1.CONTENT_APPLICATION_JSON);
@@ -156,12 +160,14 @@ var DownloadsController = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var id, download;
             return __generator(this, function (_a) {
-                id = request.query.id || null;
+                id = JSON.parse(request.body).id || null;
                 download = this.model.get(id);
                 if (download) {
                     response.status(http_1.STATUS_OK);
-                    response.sendFile(download.torrent.path, function (error) {
-                        log_1.Log.error("[DOWNLOADS CONTROLLER] ", error);
+                    response.download(download.torrent.path, download.torrent.name, function (error) {
+                        if (error) {
+                            log_1.Log.error("[DOWNLOADS CONTROLLER] ", error);
+                        }
                     });
                 }
                 else {

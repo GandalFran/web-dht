@@ -113,7 +113,7 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
 
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
-            formData.append('file',this.file);
+            formData.append('file',this.torrentFile);
             req.open('POST',Server_url_prefix + ":" + Server_port + "/download/create",false);
             req.send(formData);
 

@@ -94,7 +94,6 @@ export class UploadsController{
      */
     public async deleteupload(request: Express.Request, response: Express.Response) {
         const id: string = JSON.parse(request.body).id || null;
-        console.log(id)
         this.model.delete(id);
         response.status(STATUS_OK);
         response.contentType(CONTENT_APPLICATION_JSON);
@@ -116,9 +115,6 @@ export class UploadsController{
             response.status(STATUS_OK);
             response.download(upload.torrent.path, upload.torrent.name, function(error){
                 if(error){
-                    console.error(upload.torrent.path)
-                    console.error(upload.torrent.name)
-                    console.error(error)
                     Log.error(`[UPLOADS CONTROLLER] `, error);
                 }
             });

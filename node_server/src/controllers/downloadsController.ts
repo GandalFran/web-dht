@@ -62,8 +62,12 @@ export class DownloadsController{
     public async createdownload(request: Express.Request, response: Express.Response) {
         const form = new IncomingForm();
 
+        console.log(request)
+
         Log.info('recived download request')
         form.on('file',async (field, uploadedFile) => {
+
+            Log.info('recived file')
             const id: string = this.model.id();
  
             // move file to temporal folder
@@ -82,14 +86,17 @@ export class DownloadsController{
             response.json({"id": id});
 
             // wait after the response has been send
+            Log.info(`started download`)
+            Log.info(`f`)
             await this.model.get(id).wait();
             Log.info(`the download of ${this.model.get(id).torrent.path} on ${this.model.get(id).torrent.file.name} finished.`)
         });
 
         form.parse(request);
+        Log.info(`he salido`)
     }
     public async deletedownload(request: Express.Request, response: Express.Response) {
-        const id: string = request.body.id;
+        const id: string = JSON.parse(request.body).id || null;
         this.model.delete(id);
         response.status(STATUS_OK);
         response.contentType(CONTENT_APPLICATION_JSON);
@@ -102,13 +109,15 @@ export class DownloadsController{
      * @param response express' response object
      */
     public async getfile(request: Express.Request, response: Express.Response) {
-        const id: any = request.query.id || null;
+        const id: string = JSON.parse(request.body).id || null;
         const download:Download = this.model.get(id);
 
         if(download){
             response.status(STATUS_OK);
-            response.sendFile(download.torrent.path, function(error){
-                Log.error(`[DOWNLOADS CONTROLLER] `, error);
+            response.download(download.torrent.path, download.torrent.name, function(error){
+                if(error){
+                    Log.error(`[DOWNLOADS CONTROLLER] `, error);
+                }
             });
         }else{
             response.status(STATUS_INTERNAL_SERVER_ERROR);

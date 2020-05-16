@@ -69,7 +69,7 @@
                       icon
                       left
                       small
-                      @click="onButtonClick(row.item)">
+                      @click="onDeleteClick(row.item)">
                       <v-icon>{{ icons.mdiDelete }}</v-icon>
                       Delete
                     </v-btn>
@@ -130,7 +130,7 @@
       if (req.status == 200) {
         console.log(req.response);
         //Check if they are downloaded files
-        const responseDownloads = req.response;
+        const responseDownloads = JSON.parse(req.response);
 
         if(responseDownloads.length > 0){
           for(var i =0; i<responseDownloads.length; i++){
@@ -147,13 +147,13 @@
       }
     },
     methods: {
-      onButtonClick(item) {
+      onDeleteClick(item) {
         console.log('click on ' + item.nombre);
         const req = new XMLHttpRequest();
         req.open('POST',Server_url_prefix + ":" + Server_port + "/download/delete",false);
-        req.send(JSON.stringify(item.id));
+        req.send(JSON.stringify({id: item.id}));
         console.log("He enviado petición para eliminar");
-        if (req.status == 200 && req.response == true) { // Here delete from downloaded files
+        if (req.status == 200) { // Here delete from downloaded files
           console.log("He recibido confirmación");
           let pos = -1;
           for(var i=0; i < this.filesDownloaded.length ; i++){
@@ -176,7 +176,7 @@
           if (req.status == 200) {
             console.log(req.response);
             //Check if they are downloaded files
-            const responseDownloads = req.response;
+            const responseDownloads = JSON.parse(req.response);
 
             if(responseDownloads.length > 0){
               for(var i =0; i<responseDownloads.length; i++){

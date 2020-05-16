@@ -142,7 +142,6 @@ var UploadsController = /** @class */ (function () {
             var id;
             return __generator(this, function (_a) {
                 id = JSON.parse(request.body).id || null;
-                console.log(id);
                 this.model.delete(id);
                 response.status(http_1.STATUS_OK);
                 response.contentType(http_1.CONTENT_APPLICATION_JSON);
@@ -167,9 +166,6 @@ var UploadsController = /** @class */ (function () {
                     response.status(http_1.STATUS_OK);
                     response.download(upload.torrent.path, upload.torrent.name, function (error) {
                         if (error) {
-                            console.error(upload.torrent.path);
-                            console.error(upload.torrent.name);
-                            console.error(error);
                             log_1.Log.error("[UPLOADS CONTROLLER] ", error);
                         }
                     });
