@@ -95,10 +95,25 @@
             this.torrentErrorMessage = null;
             this.torrentErrorFlag = false;
 
+            //Check file size
+            if(this.torrentFile == null){
+              this.torrentErrorMessage = "Debe seleccionar un .torrent para poder descargar";
+              this.torrentErrorFlag = true;
+              return;
+            }
+
+            console.log(this.torrentFile.type);
+            //Check file size
+            /*if(this.torrentFile.type != "torrent"){
+              this.torrentErrorMessage = "El archivo seleccionado debe tener formato .torrent";
+              this.torrentErrorFlag = true;
+              return;
+            }*/
+
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',"http://localhost:80/torrent/retrieve",false);
+            req.open('POST',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/download/create",false);
             req.send(formData);
 
             if (req.status == 200) {
@@ -114,6 +129,13 @@
             this.fileErrorFlag = false;
 
             //Check file size
+            if(this.file == null){
+              this.fileErrorMessage = "Debe seleccionar un archivo para subir";
+              this.fileErrorFlag = true;
+              return;
+            }
+
+            //Check file size
             if(this.file.size > 1000000){
               this.fileErrorMessage = "No es posible subir archivo de un tamaño superior a 1MB";
               this.fileErrorFlag = true;
@@ -123,7 +145,7 @@
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',"http://localhost:80/upload/create",false);
+            req.open('POST',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/upload/create",false);
             req.send(formData);
 
             if (req.status == 200) {

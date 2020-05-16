@@ -5,16 +5,6 @@
             <v-toolbar dark color="#d3d3d3" class=" toolbar hidden-md-and-up" id="toolbar">
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
-                    <v-col cols="12" sm="5">
-                        <v-btn
-                            text
-                            class="toolbar"
-                            color="#0f1c41"
-                            to="/statusFiles"
-                        >
-                            Status
-                        </v-btn>
-                    </v-col>
                     <v-col cols="12" sm="3">
                         <v-btn
                             text
@@ -23,6 +13,26 @@
                             to="/filesTreatment"
                         >
                             Files
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="12" sm="5">
+                        <v-btn
+                            text
+                            class="toolbar"
+                            color="#0f1c41"
+                            to="/statusDownloadingFiles"
+                        >
+                            Download Status
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="12" sm="3">
+                        <v-btn
+                            text
+                            class="toolbar"
+                            color="#0f1c41"
+                            to="/statusUploadingFiles"
+                        >
+                            Upload Status
                         </v-btn>
                     </v-col>
                 </v-toolbar-items>
@@ -38,7 +48,8 @@ export default {
     data() {
         return {
             items: [
-                { path: "/#/", title: "Status" },
+                { path: "/#/", title: "Download Status" },
+                { path: "/#/statusUploadingFiles", title: "Upload Status" },
                 { path: "/#/filesTreatment", title: "Files" }
             ],
             locationWindow: null,
