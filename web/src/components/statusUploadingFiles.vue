@@ -155,7 +155,13 @@
         console.log("He enviado petición para eliminar");
         if (req.status == 200 && req.response == true) { // Here delete from downloaded files
           console.log("He recibido confirmación");
-          let pos = this.filesUploaded.map(function(e){return e.id}).indexOf(item.id);
+          let pos = -1;
+          for(var i=0; i < this.filesUploaded.length ; i++){
+            if(this.filesUploaded[i].id == item.id){
+              pos = i;
+              break;
+            }
+          }
           this.filesUploaded.slice(pos,1);
         }
       },
@@ -178,11 +184,27 @@
                 const element = responseUploads[i];
                   if(element.percentage == 100){
                     //Check if it is in uploading files
-                    let pos = filesUploaded.map(function(e){return e.id}).indexOf(element.id);
+                    let pos = -1;
+
+                    if(filesUploaded.length > 0){
+                      for(var j=0; j < filesUploaded.length ; j++){
+                        if(filesUploaded[j].id == element.id){
+                          pos = j;
+                          break;
+                        }
+                      } 
+                    }
 
                     if(pos == -1){//Here it doesn´t exist in uploaded files
                       //check if exists in uploading files
-                      pos = files.map(function(e){return e.id}).indexOf(element.id);
+                      if(files.length > 0){
+                        for(var k=0; k < files.length ; k++){
+                          if(files[k].id == element.id){
+                            pos = k;
+                            break;
+                          }
+                        } 
+                      }
                       if(pos != -1){//Delete from uploading files and add it to uploaded files
                         files.slice(pos,1);
                       }
@@ -192,7 +214,15 @@
                     //In case it exists nothing to do
                   }else{
                     //In this case check only in uploading files
-                    let pos = files.map(function(e){return e.id}).indexOf(element.id);
+                    let pos = -1;
+                    if(files.length > 0){
+                        for(var l=0; l < files.length ; l++){
+                          if(files[l].id == element.id){
+                            pos = l;
+                            break;
+                          }
+                        } 
+                      }
 
                     if(pos == -1){//It doesn´t exist, add it
                       files.push(element);

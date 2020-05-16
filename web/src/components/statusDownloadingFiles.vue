@@ -155,7 +155,13 @@
         console.log("He enviado petición para eliminar");
         if (req.status == 200 && req.response == true) { // Here delete from downloaded files
           console.log("He recibido confirmación");
-          let pos = this.filesDownloaded.map(function(e){return e.id}).indexOf(item.id);
+          let pos = -1;
+          for(var i=0; i < this.filesDownloaded.length ; i++){
+            if(this.filesDownloaded[i].id == item.id){
+              pos = i;
+              break;
+            }
+          }
           this.filesDownloaded.slice(pos,1);
         }
       },
@@ -177,11 +183,28 @@
                 const element = responseDownloads[i];
                 if(element.percentage == 100){
                   //Check if it is in downloading files
-                  let pos = filesDownloaded.map(function(e){return e.id}).indexOf(element.id);
+                  //Check if it is in uploading files
+                    let pos = -1;
+
+                    if(filesDownloaded.length > 0){
+                      for(var j=0; j < filesDownloaded.length ; j++){
+                        if(filesDownloaded[j].id == element.id){
+                          pos = j;
+                          break;
+                        }
+                      } 
+                    }
 
                   if(pos == -1){//Here it doesn´t exist in downloaded files
                     //check if exists in downloading files
-                    pos = files.map(function(e){return e.id}).indexOf(element.id);
+                    if(files.length > 0){
+                        for(var k=0; k < files.length ; k++){
+                          if(files[k].id == element.id){
+                            pos = k;
+                            break;
+                          }
+                        } 
+                      }
                     if(pos != -1){//Delete from downloading files and add it to downloaded files
                       files.slice(pos,1);
                     }
@@ -191,7 +214,15 @@
                   //In case it exists nothing to do
                 }else{
                   //In this case check only in downloading files
-                  let pos = files.map(function(e){return e.id}).indexOf(element.id);
+                  let pos = -1;
+                    if(files.length > 0){
+                        for(var l=0; j < files.length ; l++){
+                          if(files[l].id == element.id){
+                            pos = l;
+                            break;
+                          }
+                        } 
+                      }
 
                   if(pos == -1){//It doesn´t exist, add it
                     files.push(element);
