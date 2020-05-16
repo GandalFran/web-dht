@@ -69,6 +69,19 @@
                       icon
                       left
                       small
+                      @click="onDownloadClick(row.item)">
+                      <v-icon>{{ icons.mdiDownload }}</v-icon>
+                      Download
+                    </v-btn>
+                  </td>
+                  <td>
+                    <v-btn
+                      class = "mx-2"
+                      color = "#000000"
+                      dark
+                      icon
+                      left
+                      small
                       @click="onDeleteClick(row.item)">
                       <v-icon>{{ icons.mdiDelete }}</v-icon>
                       Delete
@@ -87,6 +100,7 @@
 <script>
   import {
     mdiDelete,
+    mdiDownload,
   } from '@mdi/js'
   import { Server_url_prefix, Server_port } from '../variables/variables'
 
@@ -98,6 +112,7 @@
         search: '',
         icons: {
           mdiDelete,
+          mdiDownload,
         },
         headers: [
           {
@@ -163,6 +178,26 @@
             }
           }
           this.filesDownloaded.slice(pos,1);
+        }
+      },
+      onDownloadClick(item){
+        console.log('click on ' + item.name);
+        const req = new XMLHttpRequest();
+        req.open('POST',Server_url_prefix + ":" + Server_port + "/download/file",false);
+        req.send(JSON.stringify({id: item.id}));
+        console.log({id: item.id})
+        console.log("He enviado petición para eliminar");
+        if (req.status == 200) { // Here delete from downloaded files
+          console.log("He recibido confirmación");
+          console.log(req.response);
+
+          //Create link for download
+          const url = window.URL.createObjectURL(new Blob([req.response]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', `${item.name}.torrent`) //or any other extension
+          document.body.appendChild(link)
+          link.click()
         }
       },
       intervalRetreaving(){
