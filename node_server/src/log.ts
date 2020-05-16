@@ -6,6 +6,9 @@
 
 import { Config } from "./config";
 
+/**
+ * available log levels
+ */
 export enum LogLevel {
     DEBUG = 1,
     INFO = 2,
@@ -14,6 +17,9 @@ export enum LogLevel {
     NONE = 5
 }
 
+/**
+ * logging class 
+ */
 export class Log {
 
     private static logLevel : LogLevel;

@@ -4,17 +4,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var log_1 = require("./log");
-function registerCrash(e) {
-    log_1.Log.error("[NOT CONTROLLED EXCEPTION] CrashGuard caught exception", e);
-}
+/**
+ * Application crashguard (logs uncontrolled exceptions)
+ */
 var CrashGuard = /** @class */ (function () {
     function CrashGuard() {
     }
+    /**
+     * Starts the crashguard
+     */
     CrashGuard.start = function () {
-        process.on("uncaughtException", registerCrash);
+        process.on("uncaughtException", this.registerCrash);
     };
+    /**
+     * Stops the crashguard
+     */
     CrashGuard.stop = function () {
-        process.removeListener("uncaughtException", registerCrash);
+        process.removeListener("uncaughtException", this.registerCrash);
+    };
+    /**
+     * Registers an application uncontrolled error.
+     * @param e not registered error
+     */
+    CrashGuard.registerCrash = function (e) {
+        log_1.Log.error("[NOT CONTROLLED EXCEPTION] CrashGuard caught exception", e);
     };
     return CrashGuard;
 }());

@@ -12,6 +12,9 @@ import { Log } from "../log"
 import { Chunk } from "./chunk"
 import { Config } from "../config"
 
+/**
+ * Bean representing a file to upload to bittorent
+ */
 export class FileBitTorrent {
 
 	public name:string;
@@ -24,6 +27,12 @@ export class FileBitTorrent {
 		this.content = null;
 	}
 
+	/**
+	 * Builds a FilBittorrent object with the file's path
+	 * @param path the real file's path
+	 * @param name the given file's name
+	 * @return a File instanced from the given path and name with the content loaded into the content attribute.
+	 */
 	public static buildFromPath(path:string, name:string) : FileBitTorrent{
 		const file:FileBitTorrent = new FileBitTorrent();
 		file.name = name;
@@ -32,6 +41,13 @@ export class FileBitTorrent {
 		return file;
 	}
 
+	/**
+	 * Builds a FilBittorrent object with the file's content splitted in chunks
+	 * @param path the real file's path
+	 * @param name the given file's name
+	 * @param chunks the given file's content splitted in chunks
+	 * @return a File instanced from the given path and name with the content persisted into the file's path.
+	 */
 	public static buildFromChunks(path:string, name:string, chunks:Chunk[]): FileBitTorrent {
 		const file:FileBitTorrent = new FileBitTorrent();
 		file.name = name;
@@ -41,6 +57,9 @@ export class FileBitTorrent {
 		return file;
 	}
 
+	/**
+	 * Splits the file content in chunks of Config.getInstance().dht.chunkSize bytes.
+	 */
 	public split(): Chunk [] {
 		const chunks: Chunk[] = [];
 		const chunkSize: number = Config.getInstance().dht.chunkSize;
@@ -60,6 +79,9 @@ export class FileBitTorrent {
 	   	return chunks;
 	}
 
+	/**
+	 * Joins the file content splitted chunks into a single buffer.
+	 */
 	public join(chunks:Chunk[]){
 		const bufferChunks: Buffer[] = [];
 		chunks.forEach( chunk => {
@@ -68,16 +90,24 @@ export class FileBitTorrent {
 		this.content = Buffer.concat(bufferChunks);
 	}
 
+	/**
+	 * Reads the file content and loads it into the content attribute.
+	 */
 	protected read(){
 		this.content = FileSystem.readFileSync(this.path);
 	}
 
+	/**
+	 * Writes the file content (stored in the content attribute) into the file's path.
+	 */
 	protected write(){
 		FileSystem.writeFileSync(this.path, this.content);
 	}
 }
 
-
+/**
+ * Bean representing a torrent file resulting from an upload to bittorent
+ */
 export class Torrent extends FileBitTorrent{
 
 	public file:FileBitTorrent;
@@ -89,6 +119,11 @@ export class Torrent extends FileBitTorrent{
 		this.chunks = [];
 	}
 
+	/**
+	 * Builds a Torrent object with a regular file
+	 * @param file the file to build the torrent
+	 * @return a Torrent instanced from the given file.
+	 */
 	public static buildTorrentFromRegularFile(file: FileBitTorrent): Torrent{
 		const torrent: Torrent = new Torrent();
 
@@ -101,6 +136,13 @@ export class Torrent extends FileBitTorrent{
 		return torrent;
 	}
 
+	/**
+	 * Builds a Torrent object with a torrent file
+	 * @param path the torrent file path
+	 * @param filePath the location to store the file associated to the torrent if is downloaded
+	 * @param fileNamePrefix the name prefix used to avoid conflicts on files with the same name downloaded from the DHT.
+	 * @return a Torrent instanced from the given parameters, and with the list of chunk's cids loaded.
+	 */
 	public static buildTorrentFromTorrentFile(path: string, filePath:string, fileNamePrefix:string): Torrent{
 		const torrent:Torrent = new Torrent();
 		torrent.name = path;

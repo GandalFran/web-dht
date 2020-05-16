@@ -3,6 +3,9 @@
 // See LICENSE for details.
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * available log levels
+ */
 var LogLevel;
 (function (LogLevel) {
     LogLevel[LogLevel["DEBUG"] = 1] = "DEBUG";
@@ -11,6 +14,9 @@ var LogLevel;
     LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
     LogLevel[LogLevel["NONE"] = 5] = "NONE";
 })(LogLevel = exports.LogLevel || (exports.LogLevel = {}));
+/**
+ * logging class
+ */
 var Log = /** @class */ (function () {
     function Log() {
     }

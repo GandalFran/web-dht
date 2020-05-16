@@ -6,17 +6,32 @@
 
 import { Log } from "./log";
 
-function registerCrash(e: Error) {
-    Log.error("[NOT CONTROLLED EXCEPTION] CrashGuard caught exception", e);
-}
 
+
+/**
+ * Application crashguard (logs uncontrolled exceptions)
+ */
 export class CrashGuard {
  
+    /**
+     * Starts the crashguard
+     */
     public static start() {
-        process.on("uncaughtException", registerCrash);
+        process.on("uncaughtException", this.registerCrash);
     }
 
+    /**
+     * Stops the crashguard
+     */
     public static stop() {
-        process.removeListener("uncaughtException", registerCrash);
+        process.removeListener("uncaughtException", this.registerCrash);
     }
+
+    /**
+     * Registers an application uncontrolled error.
+     * @param e not registered error
+     */
+    public static registerCrash(e: Error) {
+    	Log.error("[NOT CONTROLLED EXCEPTION] CrashGuard caught exception", e);
+	}
 }

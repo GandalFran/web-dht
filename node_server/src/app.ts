@@ -19,6 +19,9 @@ import { DownloadsController } from "./controllers/downloadsController";
 import { UploadsController } from "./controllers/uploadsController";
 
 
+/**
+ * main application
+ */
 export class DHTApplication {
 
     private static singletonInstance : DHTApplication = null;
@@ -39,6 +42,9 @@ export class DHTApplication {
         this.registerView();
     }
 
+    /**
+     * Start the HTTP server
+     */
     public start() {
         HTTP.createServer(this.application).on("error", (e: any) => {
             Log.error("[HTTP]", e);
@@ -47,6 +53,9 @@ export class DHTApplication {
         });
     }
 
+    /**
+     * Configures the request body parsers for express
+     */
     private configureParsers() {
         this.application.use(BodyParser.raw());
         this.application.use(BodyParser.text());
@@ -55,6 +64,9 @@ export class DHTApplication {
         this.application.use(BodyParser.urlencoded({ limit: "300mb", extended: true, parameterLimit: 1000000}));
     }
 
+    /**
+     * Configures application controllers
+     */
     private registerControllers() {
         const uploadsController = new UploadsController();
         const downloadsController = new DownloadsController();
@@ -63,6 +75,9 @@ export class DHTApplication {
         downloadsController.registerController(this.application);
     }
 
+    /**
+     * Register the view, all in static assets
+     */
     private registerView(){
         this.application.use(Express.static(Path.join( __dirname, "..",  "..", "dist" )));
     }

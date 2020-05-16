@@ -62,12 +62,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var FileSystem = __importStar(require("fs"));
 var chunk_1 = require("./chunk");
 var config_1 = require("../config");
+/**
+ * Bean representing a file to upload to bittorent
+ */
 var FileBitTorrent = /** @class */ (function () {
     function FileBitTorrent() {
         this.name = '';
         this.path = '';
         this.content = null;
     }
+    /**
+     * Builds a FilBittorrent object with the file's path
+     * @param path the real file's path
+     * @param name the given file's name
+     * @return a File instanced from the given path and name with the content loaded into the content attribute.
+     */
     FileBitTorrent.buildFromPath = function (path, name) {
         var file = new FileBitTorrent();
         file.name = name;
@@ -75,6 +84,13 @@ var FileBitTorrent = /** @class */ (function () {
         file.read();
         return file;
     };
+    /**
+     * Builds a FilBittorrent object with the file's content splitted in chunks
+     * @param path the real file's path
+     * @param name the given file's name
+     * @param chunks the given file's content splitted in chunks
+     * @return a File instanced from the given path and name with the content persisted into the file's path.
+     */
     FileBitTorrent.buildFromChunks = function (path, name, chunks) {
         var file = new FileBitTorrent();
         file.name = name;
@@ -83,6 +99,9 @@ var FileBitTorrent = /** @class */ (function () {
         file.write();
         return file;
     };
+    /**
+     * Splits the file content in chunks of Config.getInstance().dht.chunkSize bytes.
+     */
     FileBitTorrent.prototype.split = function () {
         var chunks = [];
         var chunkSize = config_1.Config.getInstance().dht.chunkSize;
@@ -98,6 +117,9 @@ var FileBitTorrent = /** @class */ (function () {
         }
         return chunks;
     };
+    /**
+     * Joins the file content splitted chunks into a single buffer.
+     */
     FileBitTorrent.prototype.join = function (chunks) {
         var bufferChunks = [];
         chunks.forEach(function (chunk) {
@@ -105,15 +127,24 @@ var FileBitTorrent = /** @class */ (function () {
         });
         this.content = Buffer.concat(bufferChunks);
     };
+    /**
+     * Reads the file content and loads it into the content attribute.
+     */
     FileBitTorrent.prototype.read = function () {
         this.content = FileSystem.readFileSync(this.path);
     };
+    /**
+     * Writes the file content (stored in the content attribute) into the file's path.
+     */
     FileBitTorrent.prototype.write = function () {
         FileSystem.writeFileSync(this.path, this.content);
     };
     return FileBitTorrent;
 }());
 exports.FileBitTorrent = FileBitTorrent;
+/**
+ * Bean representing a torrent file resulting from an upload to bittorent
+ */
 var Torrent = /** @class */ (function (_super) {
     __extends(Torrent, _super);
     function Torrent() {
@@ -122,6 +153,11 @@ var Torrent = /** @class */ (function (_super) {
         _this.chunks = [];
         return _this;
     }
+    /**
+     * Builds a Torrent object with a regular file
+     * @param file the file to build the torrent
+     * @return a Torrent instanced from the given file.
+     */
     Torrent.buildTorrentFromRegularFile = function (file) {
         var torrent = new Torrent();
         // buld torrent file object
@@ -131,6 +167,13 @@ var Torrent = /** @class */ (function (_super) {
         torrent.chunks = file.split();
         return torrent;
     };
+    /**
+     * Builds a Torrent object with a torrent file
+     * @param path the torrent file path
+     * @param filePath the location to store the file associated to the torrent if is downloaded
+     * @param fileNamePrefix the name prefix used to avoid conflicts on files with the same name downloaded from the DHT.
+     * @return a Torrent instanced from the given parameters, and with the list of chunk's cids loaded.
+     */
     Torrent.buildTorrentFromTorrentFile = function (path, filePath, fileNamePrefix) {
         var torrent = new Torrent();
         torrent.name = path;

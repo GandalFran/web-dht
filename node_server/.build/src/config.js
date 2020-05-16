@@ -14,6 +14,9 @@ var Path = __importStar(require("path"));
 var FileSystem = __importStar(require("fs"));
 var CONFIG_FILE = "config.json";
 var DEFAULT_CONFIG_FILE = "default-config.json";
+/**
+ * DHT configuration parameters class
+ */
 var DHTConfig = /** @class */ (function () {
     function DHTConfig() {
         this.port = 0;
@@ -27,6 +30,9 @@ var DHTConfig = /** @class */ (function () {
     return DHTConfig;
 }());
 exports.DHTConfig = DHTConfig;
+/**
+ * HTTP server configuration parameters class
+ */
 var HTTPConfig = /** @class */ (function () {
     function HTTPConfig() {
         this.port = 0;
@@ -35,6 +41,9 @@ var HTTPConfig = /** @class */ (function () {
     return HTTPConfig;
 }());
 exports.HTTPConfig = HTTPConfig;
+/**
+ * main configuration model
+ */
 var Config = /** @class */ (function () {
     function Config() {
         this.log = null;
@@ -47,6 +56,11 @@ var Config = /** @class */ (function () {
         }
         return Config.singletonInstance;
     };
+    /**
+     * reads the configuration from config.json if available, and in other case
+     * takes the configuration from default-config.json. Then parses the config
+     * files content and loads it into the singletone Config instance.
+     */
     Config.init = function () {
         var config = new Config();
         var configPath = Path.resolve(__dirname, "..", "..", CONFIG_FILE);

@@ -14,7 +14,9 @@ import { Log } from "./log";
 const CONFIG_FILE = "config.json";
 const DEFAULT_CONFIG_FILE = "default-config.json";
 
-
+/**
+ * DHT configuration parameters class
+ */
 export class DHTConfig {
 
     public port:number;
@@ -36,6 +38,9 @@ export class DHTConfig {
     }
 }
 
+/**
+ * HTTP server configuration parameters class
+ */
 export class HTTPConfig {
     public port: number;
     public addr: string;
@@ -46,6 +51,9 @@ export class HTTPConfig {
     }
 }
 
+/**
+ * main configuration model
+ */
 export class Config{
 
     private static singletonInstance: Config = null;
@@ -66,7 +74,12 @@ export class Config{
         this.dht = null;
         this.http = null;
     }
-
+    
+    /**
+     * reads the configuration from config.json if available, and in other case
+     * takes the configuration from default-config.json. Then parses the config
+     * files content and loads it into the singletone Config instance.
+     */
 	public static init(): void {
         const config: Config = new Config();
         const configPath = Path.resolve(__dirname, "..", "..", CONFIG_FILE);
