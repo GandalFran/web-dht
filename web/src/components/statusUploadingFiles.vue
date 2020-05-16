@@ -73,6 +73,8 @@
                       <v-icon>{{ icons.mdiDownload }}</v-icon>
                       Download
                     </v-btn>
+                  </td>
+                  <td>
                     <v-btn
                       class = "mx-2"
                       color = "#000000"
