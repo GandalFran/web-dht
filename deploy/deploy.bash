@@ -52,7 +52,7 @@ clean_file(){
 # deploy utils
 replace_host_in_file(){
 	host=$1
-	sed 's/DHT_HOST/$host/g' $web_config_file_template > $web_config_file
+	sed "s/DHT_HOST/$host/g" $web_config_file_template > $web_config_file
 }
 
 build_web_for_node(){
@@ -80,11 +80,11 @@ deploy_one_machine(){
 
 	# copy server
 	echo "installing web and server ..."
-	copy_file $user_host "$server_folder/.build" "$final_server_foler"
+	copy_file $user_host "$server_folder" "$final_server_foler"
 
 	# start pm2 services
 	echo "configuring pm2 ..."
-	remote_exec $user_host "pm2 start $final_server_foler/index.js --log /var/log/dht.log --name dht_server"
+	remote_exec $user_host "pm2 start $final_server_foler/.build/index.js --log /var/log/dht.log --name dht_server"
 	remote_exec $user_host "pm2 startup"
 }
 

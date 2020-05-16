@@ -50,7 +50,8 @@ export class UploadsController{
                 percentage: upload.status()
             });
         });
-        response.send(uploads);
+        response.contentType(CONTENT_APPLICATION_JSON);
+        response.json(uploads);
     }
 
     /**
@@ -92,7 +93,8 @@ export class UploadsController{
      * @param response express' response object
      */
     public async deleteupload(request: Express.Request, response: Express.Response) {
-        const id: string = request.body.id || null;
+        const id: string = JSON.parse(request.body).id || null;
+        console.log(id)
         this.model.delete(id);
         response.status(STATUS_OK);
         response.contentType(CONTENT_APPLICATION_JSON);

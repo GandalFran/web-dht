@@ -50,7 +50,8 @@ export class DownloadsController{
                 percentage: download.status()
             });
         });
-        response.send(downloads);
+        response.contentType(CONTENT_APPLICATION_JSON);
+        response.json(downloads);
     }
 
     /**

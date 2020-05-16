@@ -130,13 +130,13 @@
       if (req.status == 200) {
         console.log(req.response);
         //Check if they are downloaded files
-        const responseUploads = req.response;
+        const responseUploads = JSON.parse(req.response);
 
         if(responseUploads.length > 0){
           for(var i =0; i<responseUploads.length; i++){
             const element = responseUploads[i];
             if(element.percentage == 100){
-              this.filesDownloaded.push(element);
+              this.filesUploaded.push(element);
             }else{
               this.files.push(element);
             }
@@ -151,7 +151,8 @@
         console.log('click on ' + item.nombre);
         const req = new XMLHttpRequest();
         req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/delete",false);
-        req.send(JSON.stringify(item.id));
+        req.send(JSON.stringify({id: item.id}));
+        console.log({id: item.id})
         console.log("He enviado petición para eliminar");
         if (req.status == 200 && req.response == true) { // Here delete from downloaded files
           console.log("He recibido confirmación");
@@ -174,9 +175,8 @@
           req.send();
 
           if (req.status == 200) {
-            console.log(req.response);
             //Check if they are uploaded files
-            const responseUploads = req.response;
+            const responseUploads =  JSON.parse(req.response);
 
             if(responseUploads.length > 0){
 
@@ -209,7 +209,7 @@
                         files.slice(pos,1);
                       }
                       //Add it with nothing to do if it doesn´t exists
-                      filesUploaded.push(element);
+                      filesUploaded.push();
                     }
                     //In case it exists nothing to do
                   }else{
@@ -235,7 +235,7 @@
             }
 
           }
-        },5000);
+        },2000);
       }
     }
   }

@@ -86,7 +86,8 @@ var DownloadsController = /** @class */ (function () {
                         percentage: download.status()
                     });
                 });
-                response.send(downloads);
+                response.contentType(http_1.CONTENT_APPLICATION_JSON);
+                response.json(downloads);
                 return [2 /*return*/];
             });
         });

@@ -86,7 +86,8 @@ var UploadsController = /** @class */ (function () {
                         percentage: upload.status()
                     });
                 });
-                response.send(uploads);
+                response.contentType(http_1.CONTENT_APPLICATION_JSON);
+                response.json(uploads);
                 return [2 /*return*/];
             });
         });
@@ -140,7 +141,8 @@ var UploadsController = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var id;
             return __generator(this, function (_a) {
-                id = request.body.id || null;
+                id = JSON.parse(request.body).id || null;
+                console.log(id);
                 this.model.delete(id);
                 response.status(http_1.STATUS_OK);
                 response.contentType(http_1.CONTENT_APPLICATION_JSON);
