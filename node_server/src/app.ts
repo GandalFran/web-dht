@@ -64,6 +64,6 @@ export class DHTApplication {
     }
 
     private registerView(){
-        this.application.use(Express.static(Path.join( __dirname, "..", "dist" )));
+        this.application.use(Express.static(Path.join( __dirname, "..",  "..", "dist" )));
     }
 }

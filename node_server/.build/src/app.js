@@ -59,7 +59,7 @@ var DHTApplication = /** @class */ (function () {
         downloadsController.registerController(this.application);
     };
     DHTApplication.prototype.registerView = function () {
-        this.application.use(express_1.default.static(Path.join(__dirname, "..", "dist")));
+        this.application.use(express_1.default.static(Path.join(__dirname, "..", "..", "dist")));
     };
     DHTApplication.singletonInstance = null;
     return DHTApplication;
