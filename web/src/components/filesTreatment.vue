@@ -76,6 +76,7 @@
 </template>
 
 <script>
+import { Server_url_prefix, Server_port } from '../variables/variables'
 
   export default {
     data () {
@@ -113,7 +114,7 @@
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/download/create",false);
+            req.open('POST',Server_url_prefix + ":" + Server_port + "/download/create",false);
             req.send(formData);
 
             if (req.status == 200) {
@@ -145,7 +146,7 @@
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/upload/create",false);
+            req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/create",false);
             req.send(formData);
 
             if (req.status == 200) {

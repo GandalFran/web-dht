@@ -88,6 +88,7 @@
   import {
     mdiDelete,
   } from '@mdi/js'
+  import { Server_url_prefix, Server_port } from '../variables/variables'
 
   //import axios from 'axios';
 
@@ -122,7 +123,7 @@
     mounted() {
       //Get downloading files
       const req = new XMLHttpRequest();
-      req.open('GET',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/upload/status",false);
+      req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
       req.send();
 
       console.log("He enviado petición")
@@ -148,7 +149,7 @@
       onButtonClick(item) {
         console.log('click on ' + item.nombre);
         const req = new XMLHttpRequest();
-        req.open('POST',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/upload/delete",false);
+        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/delete",false);
         req.send(JSON.stringify(item.id));
         console.log("He enviado petición para eliminar");
         if (req.status == 200 && req.response == true) { // Here delete from downloaded files
@@ -160,7 +161,7 @@
       intervalRetreaving(){
         setInterval(function(){
           const req = new XMLHttpRequest();
-          req.open('GET',process.env.SERVER_URL_PREFIX + ":" + process.env.SERVER_PORT + "/upload/status",false);
+          req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
           req.send();
 
           if (req.status == 200) {
