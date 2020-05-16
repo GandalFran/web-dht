@@ -31,17 +31,17 @@ export class UploadsController{
      * @param application The system's main express application
      */
     public registerController(application: Express.Express){
-        application.get('/upload/status', this.uploadstatus.bind(this));
-        application.post('/upload/create', this.createupload.bind(this));
-        application.post('/upload/delete', this.deleteupload.bind(this));
-        application.post('/upload/torrent', this.gettorrent.bind(this));
+        application.get('/upload/status', this.uploadStatus.bind(this));
+        application.post('/upload/create', this.createUpload.bind(this));
+        application.post('/upload/delete', this.deleteUpload.bind(this));
+        application.post('/upload/torrent', this.getTorrent.bind(this));
     }
 
     /**
      * Get all the registered uploads.
      * @param application The system's main express application
      */
-    public async uploadstatus(request: Express.Request, response: Express.Response) {
+    public async uploadStatus(request: Express.Request, response: Express.Response) {
         let uploads: any [] = [];
         this.model.all().forEach (upload => {
             uploads.push({
@@ -59,7 +59,7 @@ export class UploadsController{
      * @param request express' request object
      * @param response express' response object
      */
-    public async createupload(request: Express.Request, response: Express.Response) {
+    public async createUpload(request: Express.Request, response: Express.Response) {
         const form = new IncomingForm();
 
         form.on('file',async (field, uploadedFile) => {
@@ -92,7 +92,7 @@ export class UploadsController{
      * @param request express' request object
      * @param response express' response object
      */
-    public async deleteupload(request: Express.Request, response: Express.Response) {
+    public async deleteUpload(request: Express.Request, response: Express.Response) {
         const id: string = JSON.parse(request.body).id || null;
         this.model.delete(id);
         response.status(STATUS_OK);
@@ -105,7 +105,7 @@ export class UploadsController{
      * @param request express' request object
      * @param response express' response object
      */
-    public async gettorrent(request: Express.Request, response: Express.Response) {
+    public async getTorrent(request: Express.Request, response: Express.Response) {
         const id: string = JSON.parse(request.body).id || null;
         const upload:Upload = this.model.get(id);
 

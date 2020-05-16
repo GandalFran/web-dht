@@ -65,16 +65,16 @@ var UploadsController = /** @class */ (function () {
      * @param application The system's main express application
      */
     UploadsController.prototype.registerController = function (application) {
-        application.get('/upload/status', this.uploadstatus.bind(this));
-        application.post('/upload/create', this.createupload.bind(this));
-        application.post('/upload/delete', this.deleteupload.bind(this));
-        application.post('/upload/torrent', this.gettorrent.bind(this));
+        application.get('/upload/status', this.uploadStatus.bind(this));
+        application.post('/upload/create', this.createUpload.bind(this));
+        application.post('/upload/delete', this.deleteUpload.bind(this));
+        application.post('/upload/torrent', this.getTorrent.bind(this));
     };
     /**
      * Get all the registered uploads.
      * @param application The system's main express application
      */
-    UploadsController.prototype.uploadstatus = function (request, response) {
+    UploadsController.prototype.uploadStatus = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var uploads;
             return __generator(this, function (_a) {
@@ -97,7 +97,7 @@ var UploadsController = /** @class */ (function () {
      * @param request express' request object
      * @param response express' response object
      */
-    UploadsController.prototype.createupload = function (request, response) {
+    UploadsController.prototype.createUpload = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var form;
             var _this = this;
@@ -137,7 +137,7 @@ var UploadsController = /** @class */ (function () {
      * @param request express' request object
      * @param response express' response object
      */
-    UploadsController.prototype.deleteupload = function (request, response) {
+    UploadsController.prototype.deleteUpload = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var id;
             return __generator(this, function (_a) {
@@ -155,7 +155,7 @@ var UploadsController = /** @class */ (function () {
      * @param request express' request object
      * @param response express' response object
      */
-    UploadsController.prototype.gettorrent = function (request, response) {
+    UploadsController.prototype.getTorrent = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var id, upload;
             return __generator(this, function (_a) {

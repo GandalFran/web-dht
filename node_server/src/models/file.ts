@@ -71,10 +71,13 @@ export class FileBitTorrent {
 
 		// generate chunks
 	    for (var i = 0; i < this.content.length; i += chunkSize) {
-	        let bufferChunk:Buffer = this.content.slice(i, i+chunkSize);
+	    	const chunkEnd = ((i+chunkSize) > this.content.length) ? (this.content.length) : (i+chunkSize);
+	        let bufferChunk:Buffer = this.content.slice(i, chunkEnd);
 			let chunk: Chunk = Chunk.buildWithValue(bufferChunk);
 			chunks.push(chunk);
 	   	}
+	   	console.log(i-chunkSize)
+	   	console.log(this.content.length)
 
 	   	return chunks;
 	}
@@ -102,6 +105,13 @@ export class FileBitTorrent {
 	 */
 	protected write(){
 		FileSystem.writeFileSync(this.path, this.content);
+	}
+
+	/**
+	 * Deletes the file.
+	 */
+	public delete(){
+		FileSystem.unlinkSync(this.path);
 	}
 }
 
@@ -162,7 +172,7 @@ export class Torrent extends FileBitTorrent{
 	   	return new Promise<any>(function(resolve, reject){
 	   		const promises: Promise<any>[] = [];
 			torrent.chunks.forEach(function(chunk){
-				if(!chunk.cid){
+				if(chunk.cid === null){
 					promises.push(chunk.store());
 				}
 			});
@@ -185,7 +195,7 @@ export class Torrent extends FileBitTorrent{
 	   	return new Promise<any>(function(resolve, reject){
 	   		const promises: Promise<any>[] = [];
 			torrent.chunks.forEach(function(chunk){
-				if(!chunk.value){
+				if(chunk.value === null){
 					promises.push(chunk.resolve());
 				}
 			});

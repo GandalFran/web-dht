@@ -65,16 +65,16 @@ var DownloadsController = /** @class */ (function () {
      * @param application The system's main express application
      */
     DownloadsController.prototype.registerController = function (application) {
-        application.get("/download/status", this.downloadstatus.bind(this));
-        application.post("/download/create", this.createdownload.bind(this));
-        application.post("/download/delete", this.deletedownload.bind(this));
-        application.post("/download/file", this.getfile.bind(this));
+        application.get("/download/status", this.downloadStatus.bind(this));
+        application.post("/download/create", this.createDownload.bind(this));
+        application.post("/download/delete", this.deleteDownload.bind(this));
+        application.post("/download/file", this.getFile.bind(this));
     };
     /**
      * Get all the registered downloads.
      * @param application The system's main express application
      */
-    DownloadsController.prototype.downloadstatus = function (request, response) {
+    DownloadsController.prototype.downloadStatus = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var downloads;
             return __generator(this, function (_a) {
@@ -97,14 +97,12 @@ var DownloadsController = /** @class */ (function () {
      * @param request express' request object
      * @param response express' response object
      */
-    DownloadsController.prototype.createdownload = function (request, response) {
+    DownloadsController.prototype.createDownload = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var form;
             var _this = this;
             return __generator(this, function (_a) {
                 form = new formidable_1.IncomingForm();
-                console.log(request);
-                log_1.Log.info('recived download request');
                 form.on('file', function (field, uploadedFile) { return __awaiter(_this, void 0, void 0, function () {
                     var id, path, fileNamePrefix, filePath, torrent;
                     return __generator(this, function (_a) {
@@ -122,10 +120,9 @@ var DownloadsController = /** @class */ (function () {
                                 response.contentType(http_1.CONTENT_APPLICATION_JSON);
                                 response.json({ "id": id });
                                 // wait after the response has been send
-                                log_1.Log.info("started download");
-                                log_1.Log.info("f");
                                 return [4 /*yield*/, this.model.get(id).wait()];
                             case 1:
+                                // wait after the response has been send
                                 _a.sent();
                                 log_1.Log.info("the download of " + this.model.get(id).torrent.path + " on " + this.model.get(id).torrent.file.name + " finished.");
                                 return [2 /*return*/];
@@ -133,12 +130,16 @@ var DownloadsController = /** @class */ (function () {
                     });
                 }); });
                 form.parse(request);
-                log_1.Log.info("he salido");
                 return [2 /*return*/];
             });
         });
     };
-    DownloadsController.prototype.deletedownload = function (request, response) {
+    /**
+     * Deletes a download with the given id.
+     * @param request express' request object
+     * @param response express' response object
+     */
+    DownloadsController.prototype.deleteDownload = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var id;
             return __generator(this, function (_a) {
@@ -156,7 +157,7 @@ var DownloadsController = /** @class */ (function () {
      * @param request express' request object
      * @param response express' response object
      */
-    DownloadsController.prototype.getfile = function (request, response) {
+    DownloadsController.prototype.getFile = function (request, response) {
         return __awaiter(this, void 0, void 0, function () {
             var id, download;
             return __generator(this, function (_a) {
@@ -164,7 +165,7 @@ var DownloadsController = /** @class */ (function () {
                 download = this.model.get(id);
                 if (download) {
                     response.status(http_1.STATUS_OK);
-                    response.download(download.torrent.path, download.torrent.name, function (error) {
+                    response.download(download.torrent.file.path, download.torrent.file.name, function (error) {
                         if (error) {
                             log_1.Log.error("[DOWNLOADS CONTROLLER] ", error);
                         }

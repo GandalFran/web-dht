@@ -111,7 +111,8 @@ var FileBitTorrent = /** @class */ (function () {
         }
         // generate chunks
         for (var i = 0; i < this.content.length; i += chunkSize) {
-            var bufferChunk = this.content.slice(i, i + chunkSize);
+            var chunkEnd = (i + chunkSize > this.content.length) ? (this.content.length) : (i + chunkSize);
+            var bufferChunk = this.content.slice(i, chunkEnd);
             var chunk = chunk_1.Chunk.buildWithValue(bufferChunk);
             chunks.push(chunk);
         }

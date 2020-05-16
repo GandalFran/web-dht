@@ -1,0 +1,16 @@
+{
+    "log": "DEBUG",
+    "http": {
+        "port": 80,
+        "addr": "0.0.0.0"
+    },
+    "dht": {
+        "port": 5000,
+        "idIface": "eth0",
+    	"chunkSize": 950,
+    	"bootstrapPeer": [DHT_PEER],
+        "isPublic": true,
+        "numAttemps": 100,
+        "temporalFiles": "/tmp"
+    }
+}

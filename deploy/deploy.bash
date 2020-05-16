@@ -6,11 +6,16 @@
 
 web_folder="../web"
 server_folder="../node_server"
-web_config_file="$web_folder/src/variables/variables.js"
-web_config_file_template="$web_folder/src/variables/template_variables.js"
 
 installation_folder="/opt/dht"
 final_server_foler="$installation_folder/server"
+
+server_config_file="$server_folder/config.json"
+server_config_file_template="$server_folder/template-config.json"
+
+web_config_file="$web_folder/src/variables/variables.js"
+web_config_file_template="$web_folder/src/variables/template_variables.js"
+
 
 # TODO: don't ever think in changing this constant or you will suffer of covaids
 _deploy_folder="../deploy"
@@ -55,7 +60,7 @@ replace_host_in_file(){
 	sed "s/DHT_HOST/$host/g" $web_config_file_template > $web_config_file
 }
 
-build_web_for_node(){
+build_web_config(){
 	host=$1
 	cd $web_folder
 	replace_host_in_file $host
@@ -63,37 +68,45 @@ build_web_for_node(){
 	cd $_deploy_folder
 }
 
+build_server_config(){
+	peer=$1
+	if [[ -z "$peer" ]]; then
+		sed "s/DHT_PEER//g" $server_config_file_template > $server_config_file
+	else
+		sed "s/DHT_PEER/{\"host\": \"$peer\", \"port\": 5000}/g" $server_config_file_template > $server_config_file
+	fi
+}
+
 deploy_one_machine(){
 	user_host=$1
 	host=$2
-
-	# install deploy tools
-	echo "installing pm2 ..."
-	remote_exec $user_host "npm install pm2 -g"
+	bootstrap_peer=$3
 
 	# prepare folder
 	echo "preparing folders ..."
 	remote_exec $user_host "mkdir -p $installation_folder"
+	remote_exec $user_host "mkdir -p $final_server_foler"
 
-	# prepare web for current host
-	build_web_for_node $host
+	# prepare web and server configuration
+	build_web_config $host
+	build_server_config $bootstrap_peer
 
 	# copy server
 	echo "installing web and server ..."
-	copy_file $user_host "$server_folder" "$final_server_foler"
+	copy_file $user_host "$server_folder/*" "$final_server_foler"
+	clean_file $user_host "$final_server_foler/node_modules"
+
+	# build server
+	remote_exec $user_host "cd $final_server_foler; npm install"
+	remote_exec $user_host "cd $final_server_foler; npm run build"
 
 	# start pm2 services
 	echo "configuring pm2 ..."
 	remote_exec $user_host "pm2 start $final_server_foler/.build/index.js --log /var/log/dht.log --name dht_server"
-	remote_exec $user_host "pm2 startup"
 }
 
 clean_one_machine(){
 	user_host=$1
-
-	# stop application and server
-	remote_exec $user_host "pm2 stop dht_server"
-
 	# delete from pm2 application and server
 	remote_exec $user_host "pm2 delete dht_server"
 
@@ -167,11 +180,11 @@ do
 
 			# deploy in each host
 			echo "deploying on $host1 ..."
-			deploy_one_machine $user_host1 $host1
+			deploy_one_machine $user_host1 $host1 ""
 			echo "deploying on $host2 ..."
-			deploy_one_machine $user_host2 $host2
+			deploy_one_machine $user_host2 $host2 $host1
 			echo "deploying on $host3 ..."
-			deploy_one_machine $user_host3 $host3
+			deploy_one_machine $user_host3 $host3 $host1
 
 			# wait for dht to deploy
 			echo "sleep 5 seconds to allow dht to start properly ..."

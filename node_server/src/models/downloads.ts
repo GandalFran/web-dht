@@ -90,6 +90,8 @@ export class Downloads {
      */
 	public delete(id:string){
 		try{
+			const download:Download = this.get(id);
+			download.torrent.file.delete();
 			delete this.model[id];
 		}catch(error){
 		}

@@ -195,7 +195,7 @@
           const url = window.URL.createObjectURL(new Blob([req.response]))
           const link = document.createElement('a')
           link.href = url
-          link.setAttribute('download', `${item.name}.torrent`) //or any other extension
+          link.setAttribute('download', `${item.name}`) //or any other extension
           document.body.appendChild(link)
           link.click()
         }

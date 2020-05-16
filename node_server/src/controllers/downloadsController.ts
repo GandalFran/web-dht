@@ -31,17 +31,17 @@ export class DownloadsController{
      * @param application The system's main express application
      */
     public registerController(application: Express.Express): any {
-        application.get("/download/status", this.downloadstatus.bind(this));
-        application.post("/download/create", this.createdownload.bind(this));
-        application.post("/download/delete", this.deletedownload.bind(this));
-        application.post("/download/file", this.getfile.bind(this));
+        application.get("/download/status", this.downloadStatus.bind(this));
+        application.post("/download/create", this.createDownload.bind(this));
+        application.post("/download/delete", this.deleteDownload.bind(this));
+        application.post("/download/file", this.getFile.bind(this));
     }
 
     /**
      * Get all the registered downloads.
      * @param application The system's main express application
      */
-    public async downloadstatus(request: Express.Request, response: Express.Response) {
+    public async downloadStatus(request: Express.Request, response: Express.Response) {
         let downloads: any [] = [];
         this.model.all().forEach (download => {
             downloads.push({
@@ -59,12 +59,9 @@ export class DownloadsController{
      * @param request express' request object
      * @param response express' response object
      */
-    public async createdownload(request: Express.Request, response: Express.Response) {
+    public async createDownload(request: Express.Request, response: Express.Response) {
         const form = new IncomingForm();
 
-        console.log(request)
-
-        Log.info('recived download request')
         form.on('file',async (field, uploadedFile) => {
 
             Log.info('recived file')
@@ -86,16 +83,19 @@ export class DownloadsController{
             response.json({"id": id});
 
             // wait after the response has been send
-            Log.info(`started download`)
-            Log.info(`f`)
             await this.model.get(id).wait();
             Log.info(`the download of ${this.model.get(id).torrent.path} on ${this.model.get(id).torrent.file.name} finished.`)
         });
 
         form.parse(request);
-        Log.info(`he salido`)
     }
-    public async deletedownload(request: Express.Request, response: Express.Response) {
+
+    /**
+     * Deletes a download with the given id.
+     * @param request express' request object
+     * @param response express' response object
+     */
+    public async deleteDownload(request: Express.Request, response: Express.Response) {
         const id: string = JSON.parse(request.body).id || null;
         this.model.delete(id);
         response.status(STATUS_OK);
@@ -108,13 +108,13 @@ export class DownloadsController{
      * @param request express' request object
      * @param response express' response object
      */
-    public async getfile(request: Express.Request, response: Express.Response) {
+    public async getFile(request: Express.Request, response: Express.Response) {
         const id: string = JSON.parse(request.body).id || null;
         const download:Download = this.model.get(id);
 
         if(download){
             response.status(STATUS_OK);
-            response.download(download.torrent.path, download.torrent.name, function(error){
+            response.download(download.torrent.file.path, download.torrent.file.name, function(error){
                 if(error){
                     Log.error(`[DOWNLOADS CONTROLLER] `, error);
                 }
