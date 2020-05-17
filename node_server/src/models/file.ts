@@ -247,8 +247,8 @@ export class Torrent extends FileBitTorrent{
 		// parse content
 		const torrentInfo:any = JSON.parse(this.content.toString('utf-8'));
 
+		this.file.path = `${this.file.path}/${this.file.name}${torrentInfo.info.name}`
 		this.file.name = torrentInfo.info.name;
-		this.file.path = this.file.path + '/' + this.file.name + torrentInfo.info.name;
 		for(var i=0; i<torrentInfo.info.pieces.length; i++){
 			const piece = torrentInfo.info.pieces[i];
 			this.chunks.push(Chunk.buildWithCid(Buffer.from(piece, 'base64')));

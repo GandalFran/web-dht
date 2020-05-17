@@ -68,11 +68,11 @@ export class DownloadsController{
             const id: string = this.model.id();
  
             // move file to temporal folder
-            const path: string = Config.getInstance().dht.temporalFiles + '/' + id + '_' + uploadedFile.name;
+            const path: string = `${Config.getInstance().dht.temporalFiles}/download_torrent_${id}_${uploadedFile.name}`;
             FileSystem.renameSync(uploadedFile.path, path);
 
             // torrent
-            const fileNamePrefix = id + '_';
+            const fileNamePrefix = `download_torrent_${id}_`;
             const filePath =  Config.getInstance().dht.temporalFiles;
             const torrent: Torrent  = Torrent.buildTorrentFromTorrentFile(path, filePath, fileNamePrefix);
             
@@ -110,8 +110,6 @@ export class DownloadsController{
      */
     public async getFile(request: Express.Request, response: Express.Response) {
         const id: string = request.body.id || null;
-        console.log(request.body)
-        console.log(id)
         const download:Download = this.model.get(id);
 
         if(download){

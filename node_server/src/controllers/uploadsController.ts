@@ -66,7 +66,7 @@ export class UploadsController{
             const id: string = this.model.id();
             
             // move file to temporal folder
-            const path: string = Config.getInstance().dht.temporalFiles + '/' + id + '_' + uploadedFile.name;
+            const path: string = `${Config.getInstance().dht.temporalFiles}/upload_file_${id}_${uploadedFile.name}`;
             FileSystem.renameSync(uploadedFile.path, path);
 
             // create file and torrent
@@ -81,6 +81,7 @@ export class UploadsController{
                
             // wait after the response has been send
             await this.model.get(id).wait();
+
             Log.info(`the upload of ${this.model.get(id).torrent.file.path} into ${this.model.get(id).torrent.path} finished.`)
         });
 
@@ -108,8 +109,6 @@ export class UploadsController{
     public async getTorrent(request: Express.Request, response: Express.Response) {
         const id: string = JSON.parse(request.body).id || null;
         const upload:Upload = this.model.get(id);
-
-        console.log(id)
 
         if(upload){
             response.status(STATUS_OK);
