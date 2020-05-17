@@ -13,9 +13,6 @@ final_server_foler="$installation_folder/server"
 server_config_file="$server_folder/config.json"
 server_config_file_template="$server_folder/template-config.json"
 
-web_config_file="$web_folder/src/variables/variables.js"
-web_config_file_template="$web_folder/src/variables/template_variables.js"
-
 
 # TODO: don't ever think in changing this constant or you will suffer of covaids
 _deploy_folder="../deploy"
@@ -55,18 +52,6 @@ clean_file(){
 }
 
 # deploy utils
-replace_host_in_file(){
-	host=$1
-	sed "s/DHT_HOST/$host/g" $web_config_file_template > $web_config_file
-}
-
-build_web_config(){
-	host=$1
-	cd $web_folder
-	replace_host_in_file $host
-	npm run build
-	cd $_deploy_folder
-}
 
 build_server_config(){
 	peer=$1
@@ -79,8 +64,7 @@ build_server_config(){
 
 deploy_one_machine(){
 	user_host=$1
-	host=$2
-	bootstrap_peer=$3
+	bootstrap_peer=$2
 
 	# prepare folder
 	echo "preparing folders ..."
@@ -88,7 +72,6 @@ deploy_one_machine(){
 	remote_exec $user_host "mkdir -p $final_server_foler"
 
 	# prepare web and server configuration
-	build_web_config $host
 	build_server_config $bootstrap_peer
 
 	# copy server
@@ -180,11 +163,11 @@ do
 
 			# deploy in each host
 			echo "deploying on $host1 ..."
-			deploy_one_machine $user_host1 $host1 ""
+			deploy_one_machine $user_host1 ""
 			echo "deploying on $host2 ..."
-			deploy_one_machine $user_host2 $host2 $host1
+			deploy_one_machine $user_host2 $host1
 			echo "deploying on $host3 ..."
-			deploy_one_machine $user_host3 $host3 $host1
+			deploy_one_machine $user_host3 $host1
 
 			# wait for dht to deploy
 			echo "sleep 5 seconds to allow dht to start properly ..."

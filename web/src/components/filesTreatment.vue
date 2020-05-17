@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import { Server_url_prefix, Server_port } from '../variables/variables'
 
   export default {
     data () {
@@ -114,7 +113,7 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.torrentFile);
-            req.open('POST',Server_url_prefix + ":" + Server_port + "/download/create",false);
+            req.open('POST',"/download/create",false);
             req.send(formData);
 
             if (req.status == 200) {
@@ -148,7 +147,7 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
             formData.append('file',this.file);
-            req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/create",false);
+            req.open('POST',"/upload/create",false);
             req.send(formData);
 
             if (req.status != 200) {

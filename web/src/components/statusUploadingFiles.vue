@@ -102,8 +102,6 @@
     mdiDelete,
     mdiDownload,
   } from '@mdi/js'
-  import { Server_url_prefix, Server_port } from '../variables/variables'
-
   //import axios from 'axios';
 
   export default {
@@ -145,7 +143,7 @@
     methods: {
       onDeleteClick(item) {
         const req = new XMLHttpRequest();
-        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/delete",false);
+        req.open('POST',"/upload/delete",false);
         req.send(JSON.stringify({id: item.id}));
         if (req.status == 200 && req.response == true) { // Here delete from downloaded files
           let pos = -1;
@@ -160,7 +158,7 @@
       },
       onDownloadClick(item){
         const req = new XMLHttpRequest();
-        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/torrent",false);
+        req.open('POST',"/upload/torrent",false);
         req.send(JSON.stringify({id: item.id}));
         if (req.status == 200) { // Here delete from downloaded files
           //Create link for download
@@ -174,7 +172,7 @@
       },
       updateTable(){
         const req = new XMLHttpRequest();
-        req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
+        req.open('GET',"/upload/status",false);
         req.send();
 
         this.files = []

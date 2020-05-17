@@ -103,9 +103,6 @@
     mdiDownload,
   } from '@mdi/js'
   import axios from 'axios'
-  import { Server_url_prefix, Server_port } from '../variables/variables'
-
-  //import axios from 'axios';
 
   export default {
     data () {
@@ -146,7 +143,7 @@
     methods: {
       onDeleteClick(item) {
         const req = new XMLHttpRequest();
-        req.open('POST',Server_url_prefix + ":" + Server_port + "/download/delete",false);
+        req.open('POST',"/download/delete",false);
         req.send(JSON.stringify({id: item.id}));
         if (req.status == 200) { // Here delete from downloaded files
           let pos = -1;
@@ -161,7 +158,7 @@
       },
       onDownloadClick(item){
         axios({
-            url: Server_url_prefix + ":" + Server_port + "/download/file",
+            url: "/download/file",
             method: 'POST',
             responseType: 'blob',
             data: {id: item.id},
@@ -181,7 +178,7 @@
 
       updateTable(){
         const req = new XMLHttpRequest();
-        req.open('GET',Server_url_prefix + ":" + Server_port + "/download/status",false);
+        req.open('GET',"/download/status",false);
         req.send();
 
         this.files = []
