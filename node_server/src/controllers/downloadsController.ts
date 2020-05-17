@@ -109,7 +109,9 @@ export class DownloadsController{
      * @param response express' response object
      */
     public async getFile(request: Express.Request, response: Express.Response) {
-        const id: string = JSON.parse(request.body).id || null;
+        const id: string = request.body.id || null;
+        console.log(request.body)
+        console.log(id)
         const download:Download = this.model.get(id);
 
         if(download){

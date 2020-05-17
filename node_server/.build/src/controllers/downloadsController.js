@@ -161,7 +161,9 @@ var DownloadsController = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var id, download;
             return __generator(this, function (_a) {
-                id = JSON.parse(request.body).id || null;
+                id = request.body.id || null;
+                console.log(request.body);
+                console.log(id);
                 download = this.model.get(id);
                 if (download) {
                     response.status(http_1.STATUS_OK);

@@ -102,6 +102,7 @@
     mdiDelete,
     mdiDownload,
   } from '@mdi/js'
+  import axios from 'axios'
   import { Server_url_prefix, Server_port } from '../variables/variables'
 
   //import axios from 'axios';
@@ -182,8 +183,8 @@
       },
       onDownloadClick(item){
         console.log('click on ' + item.name);
-        const req = new XMLHttpRequest();
-        req.open("POST",Server_url_prefix + ":" + Server_port + "/download/file",false);
+        // const req = new XMLHttpRequest();
+        /*req.open("POST",Server_url_prefix + ":" + Server_port + "/download/file",false);
         req.setRequestHeader("Content-Type", "text/plain");
         req.send(JSON.stringify({id: item.id}));
         console.log({id: item.id})
@@ -193,13 +194,32 @@
           console.log(req.response);
 
           //Create link for download
-          const url = window.URL.createObjectURL(new Blob([req.response]))
+          const url = window.URL.createObjectURL(new Blob([req.response], {type: 'image/jpeg'}))
           const link = document.createElement('a')
           link.href = url
           link.setAttribute('download', `${item.name}`) //or any other extension
           document.body.appendChild(link)
           link.click()
-        }
+
+        }*/
+        axios({
+            url: Server_url_prefix + ":" + Server_port + "/download/file",
+            method: 'POST',
+            responseType: 'blob',
+            data: {id: item.id},
+        }).then((response) => {
+              console.log(response)
+             var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+             var fileLink = document.createElement('a');
+
+             fileLink.href = fileURL;
+             fileLink.setAttribute('download', item.name);
+             document.body.appendChild(fileLink);
+
+             fileLink.click();
+        }).catch(error => {
+          console.log(error)
+        });
       },
       intervalRetreaving(){
         const files = this.files
