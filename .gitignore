@@ -85,7 +85,8 @@ typings/
 .dynamodb/
 
 # build folder
-node server/.build
+node_server/.build
+node_server/dist
 
 # config json
 config.json
