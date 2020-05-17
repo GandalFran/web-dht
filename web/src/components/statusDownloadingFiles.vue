@@ -183,7 +183,8 @@
       onDownloadClick(item){
         console.log('click on ' + item.name);
         const req = new XMLHttpRequest();
-        req.open('POST',Server_url_prefix + ":" + Server_port + "/download/file",false);
+        req.open("POST",Server_url_prefix + ":" + Server_port + "/download/file",false);
+        req.setRequestHeader("Content-Type", "text/plain");
         req.send(JSON.stringify({id: item.id}));
         console.log({id: item.id})
         console.log("He enviado petición para eliminar");
