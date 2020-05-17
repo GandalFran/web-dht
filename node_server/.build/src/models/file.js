@@ -116,10 +116,6 @@ var FileBitTorrent = /** @class */ (function () {
             var chunk = chunk_1.Chunk.buildWithValue(bufferChunk);
             chunks.push(chunk);
         }
-        console.log("[split] generated " + chunks.length + " chunks");
-        chunks.forEach(function (chunk) {
-            console.log("[split] chunk (" + chunk.value.length + ") -> " + chunk.value.toString('base64'));
-        });
         return chunks;
     };
     /**
@@ -131,10 +127,6 @@ var FileBitTorrent = /** @class */ (function () {
             bufferChunks.push(chunk.value);
         });
         this.content = Buffer.concat(bufferChunks);
-        console.log("[join] joined " + bufferChunks.length + " chunks");
-        chunks.forEach(function (chunk) {
-            console.log("[split] chunk " + chunk.cid.toString('base64') + " (" + chunk.value.length + ") -> " + chunk.value.toString('base64') + " ");
-        });
     };
     /**
      * Reads the file content and loads it into the content attribute.

@@ -26,7 +26,7 @@
                   v-slot:item="row">
                   <tr>
                   <td>{{row.item.name}}</td>
-                  <td>{{row.item.percentage}}%</td>
+                  <td>{{row.item.percentage.toFixed(2)}}%</td>
                 </tr>
                 </template>
             </v-data-table>
@@ -136,109 +136,18 @@
       }
     },
     mounted() {
-      //Get downloading files
-      const req = new XMLHttpRequest();
-      req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
-      req.send();
-
-      console.log("He enviado petición")
-      if (req.status == 200) {
-        console.log(req.response);
-        //Check if they are downloaded files
-        const responseUploads = JSON.parse(req.response);
-
-        if(responseUploads.length > 0){
-          for(var i =0; i<responseUploads.length; i++){
-            const element = responseUploads[i];
-            if(element.percentage == 100){
-              this.filesUploaded.push(element);
-            }else{
-              this.files.push(element);
-            }
-          }
-        }
-
-        const files = this.files
-        const filesUploaded = this.filesUploaded
-        setInterval(function(){
-          const req = new XMLHttpRequest();
-          req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
-          req.send();
-
-          if (req.status == 200) {
-            //Check if they are uploaded files
-            const responseUploads =  JSON.parse(req.response);
-
-            if(responseUploads.length > 0){
-
-              for(var i =0; i<responseUploads.length; i++){
-                const element = responseUploads[i];
-                  if(element.percentage == 100){
-                    //Check if it is in uploading files
-                    let pos = -1;
-
-                    if(filesUploaded.length > 0){
-                      for(var j=0; j < filesUploaded.length ; j++){
-                        if(filesUploaded[j].id == element.id){
-                          pos = j;
-                          break;
-                        }
-                      } 
-                    }
-
-                    if(pos == -1){//Here it doesn´t exist in uploaded files
-                      //check if exists in uploading files
-                      if(files.length > 0){
-                        for(var k=0; k < files.length ; k++){
-                          if(files[k].id == element.id){
-                            pos = k;
-                            break;
-                          }
-                        } 
-                      }
-                      if(pos != -1){//Delete from uploading files and add it to uploaded files
-                        files.slice(pos,1);
-                      }
-                      //Add it with nothing to do if it doesn´t exists
-                      filesUploaded.push();
-                    }
-                    //In case it exists nothing to do
-                  }else{
-                    //In this case check only in uploading files
-                    let pos = -1;
-                    if(files.length > 0){
-                        for(var l=0; l < files.length ; l++){
-                          if(files[l].id == element.id){
-                            pos = l;
-                            break;
-                          }
-                        } 
-                      }
-
-                    if(pos == -1){//It doesn´t exist, add it
-                      files.push(element);
-                    }else{ //Change the element for the new data
-                      files[pos] = element;
-                    }
-                    
-                  }
-              }
-            }
-
-          }
-        },2000);
-      }
+      this.updateTable();
+      const updateTable = this.updateTable
+      setInterval(function(){
+        updateTable()
+      },2000);
     },
     methods: {
       onDeleteClick(item) {
-        console.log('click on ' + item.nombre);
         const req = new XMLHttpRequest();
         req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/delete",false);
         req.send(JSON.stringify({id: item.id}));
-        console.log({id: item.id})
-        console.log("He enviado petición para eliminar");
         if (req.status == 200 && req.response == true) { // Here delete from downloaded files
-          console.log("He recibido confirmación");
           let pos = -1;
           for(var i=0; i < this.filesUploaded.length ; i++){
             if(this.filesUploaded[i].id == item.id){
@@ -250,16 +159,10 @@
         }
       },
       onDownloadClick(item){
-        console.log('click on ' + item.name);
         const req = new XMLHttpRequest();
         req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/torrent",false);
         req.send(JSON.stringify({id: item.id}));
-        console.log({id: item.id})
-        console.log("He enviado petición para eliminar");
         if (req.status == 200) { // Here delete from downloaded files
-          console.log("He recibido confirmación");
-          console.log(req.response);
-
           //Create link for download
           const url = window.URL.createObjectURL(new Blob([req.response]))
           const link = document.createElement('a')
@@ -269,6 +172,26 @@
           link.click()
         }
       },
+      updateTable(){
+        const req = new XMLHttpRequest();
+        req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
+        req.send();
+
+        this.files = []
+        this.filesUploaded = []
+        if (req.status == 200) {
+          //Check if they are uploaded files
+          const responseFiles =  JSON.parse(req.response);
+          for(var i=0; i<responseFiles.length; i++){
+            const file = responseFiles[i];
+            if(file.percentage === 100){
+              this.filesUploaded.push(file);
+            }else{
+              this.files.push(file);
+            }
+          }
+        }
+      }
     }
   }
 </script>

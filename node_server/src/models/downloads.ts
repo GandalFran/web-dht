@@ -49,7 +49,7 @@ export class Download{
 				Log.error(`[DOWNLOADS] error on attemp ${attemp}`,error);
 			});
 			if(resolved === false){
-				await new Promise(r => setTimeout(r, 2000));
+				await new Promise(r => setTimeout(r, Config.getInstance().dht.retrySleep));
 			}
 		}
 	}

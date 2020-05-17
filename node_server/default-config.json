@@ -11,6 +11,7 @@
     	"bootstrapPeer": [],
         "isPublic": true,
         "numAttemps": 100,
+        "retrySleep": 2000,
         "temporalFiles": "/home/gandalfran/tempDht"
     }
 }

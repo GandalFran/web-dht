@@ -84,7 +84,7 @@ var Download = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         if (!(resolved === false)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 2000); })];
+                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, config_1.Config.getInstance().dht.retrySleep); })];
                     case 3:
                         _a.sent();
                         _a.label = 4;

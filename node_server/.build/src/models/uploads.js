@@ -75,7 +75,7 @@ var Upload = /** @class */ (function () {
                         attemp = 0;
                         _a.label = 1;
                     case 1:
-                        if (!(attemp < config_1.Config.getInstance().dht.numAttemps && !resolved)) return [3 /*break*/, 4];
+                        if (!(attemp < config_1.Config.getInstance().dht.numAttemps && resolved === false)) return [3 /*break*/, 5];
                         return [4 /*yield*/, Promise.resolve(this.promise).then(function () {
                                 resolved = true;
                             }).catch(function (error) {
@@ -83,11 +83,15 @@ var Upload = /** @class */ (function () {
                             })];
                     case 2:
                         _a.sent();
-                        _a.label = 3;
+                        if (!(resolved === false)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, config_1.Config.getInstance().dht.retrySleep); })];
                     case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4:
                         attemp++;
                         return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         });

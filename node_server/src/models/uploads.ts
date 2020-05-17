@@ -41,12 +41,15 @@ export class Upload{
      */
 	public async wait(){
 		var resolved: boolean = false;
-		for(var attemp = 0; attemp < Config.getInstance().dht.numAttemps && !resolved; attemp++){
+		for(var attemp = 0; attemp < Config.getInstance().dht.numAttemps && resolved===false; attemp++){
 			await Promise.resolve(this.promise).then(function(){
 				resolved = true;
 			}).catch(function(error){
 				Log.error(`[UPLOADS] error on attemp ${attemp}`,error);
 			});
+			if(resolved === false){
+				await new Promise(r => setTimeout(r, Config.getInstance().dht.retrySleep));
+			}
 		}
 	}
 }
