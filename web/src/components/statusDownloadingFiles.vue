@@ -159,7 +159,75 @@
           }
         }
 
-        this.intervalRetreaving();
+        const files = this.files
+        const filesDownloaded = this.filesDownloaded
+        setInterval(function(){
+          const req = new XMLHttpRequest();
+          req.open('GET',Server_url_prefix + ":" + Server_port + "/upload/status",false);
+          req.send();
+
+          if (req.status == 200) {
+            //Check if they are uploaded files
+            const responseDownloads =  JSON.parse(req.response);
+
+            if(responseDownloads.length > 0){
+
+              for(var i =0; i<responseDownloads.length; i++){
+                const element = responseDownloads[i];
+                  if(element.percentage == 100){
+                    //Check if it is in uploading files
+                    let pos = -1;
+
+                    if(filesDownloaded.length > 0){
+                      for(var j=0; j < filesDownloaded.length ; j++){
+                        if(filesDownloaded[j].id == element.id){
+                          pos = j;
+                          break;
+                        }
+                      } 
+                    }
+
+                    if(pos == -1){//Here it doesn´t exist in uploaded files
+                      //check if exists in uploading files
+                      if(files.length > 0){
+                        for(var k=0; k < files.length ; k++){
+                          if(files[k].id == element.id){
+                            pos = k;
+                            break;
+                          }
+                        } 
+                      }
+                      if(pos != -1){//Delete from uploading files and add it to uploaded files
+                        files.slice(pos,1);
+                      }
+                      //Add it with nothing to do if it doesn´t exists
+                      filesDownloaded.push();
+                    }
+                    //In case it exists nothing to do
+                  }else{
+                    //In this case check only in uploading files
+                    let pos = -1;
+                    if(files.length > 0){
+                        for(var l=0; l < files.length ; l++){
+                          if(files[l].id == element.id){
+                            pos = l;
+                            break;
+                          }
+                        } 
+                      }
+
+                    if(pos == -1){//It doesn´t exist, add it
+                      files.push(element);
+                    }else{ //Change the element for the new data
+                      files[pos] = element;
+                    }
+                    
+                  }
+              }
+            }
+
+          }
+        },2000);
       }
     },
     methods: {
@@ -183,25 +251,6 @@
       },
       onDownloadClick(item){
         console.log('click on ' + item.name);
-        // const req = new XMLHttpRequest();
-        /*req.open("POST",Server_url_prefix + ":" + Server_port + "/download/file",false);
-        req.setRequestHeader("Content-Type", "text/plain");
-        req.send(JSON.stringify({id: item.id}));
-        console.log({id: item.id})
-        console.log("He enviado petición para eliminar");
-        if (req.status == 200) { // Here delete from downloaded files
-          console.log("He recibido confirmación");
-          console.log(req.response);
-
-          //Create link for download
-          const url = window.URL.createObjectURL(new Blob([req.response], {type: 'image/jpeg'}))
-          const link = document.createElement('a')
-          link.href = url
-          link.setAttribute('download', `${item.name}`) //or any other extension
-          document.body.appendChild(link)
-          link.click()
-
-        }*/
         axios({
             url: Server_url_prefix + ":" + Server_port + "/download/file",
             method: 'POST',
@@ -221,78 +270,6 @@
           console.log(error)
         });
       },
-      intervalRetreaving(){
-        const files = this.files
-        const filesDownloaded = this.filesDownloaded
-        setInterval(function(){
-          const req = new XMLHttpRequest();
-          req.open('GET',Server_url_prefix + ":" + Server_port + "/download/status",false);
-          req.send();
-
-          if (req.status == 200) {
-            console.log(req.response);
-            //Check if they are downloaded files
-            const responseDownloads = JSON.parse(req.response);
-
-            if(responseDownloads.length > 0){
-              for(var i =0; i<responseDownloads.length; i++){
-                const element = responseDownloads[i];
-                if(element.percentage == 100){
-                  //Check if it is in downloading files
-                  //Check if it is in uploading files
-                    let pos = -1;
-
-                    if(filesDownloaded.length > 0){
-                      for(var j=0; j < filesDownloaded.length ; j++){
-                        if(filesDownloaded[j].id == element.id){
-                          pos = j;
-                          break;
-                        }
-                      } 
-                    }
-
-                  if(pos == -1){//Here it doesn´t exist in downloaded files
-                    //check if exists in downloading files
-                    if(files.length > 0){
-                        for(var k=0; k < files.length ; k++){
-                          if(files[k].id == element.id){
-                            pos = k;
-                            break;
-                          }
-                        } 
-                      }
-                    if(pos != -1){//Delete from downloading files and add it to downloaded files
-                      files.slice(pos,1);
-                    }
-                    //Add it with nothing to do if it doesn´t exists
-                    filesDownloaded.push(element);
-                  }
-                  //In case it exists nothing to do
-                }else{
-                  //In this case check only in downloading files
-                  let pos = -1;
-                    if(files.length > 0){
-                        for(var l=0; j < files.length ; l++){
-                          if(files[l].id == element.id){
-                            pos = l;
-                            break;
-                          }
-                        } 
-                      }
-
-                  if(pos == -1){//It doesn´t exist, add it
-                    files.push(element);
-                  }else{ //Change the element for the new data
-                    files[pos] = element;
-                  }
-                  
-                }
-              }
-            }
-
-          }
-        },2000);
-      }
     }
   }
 </script>

@@ -103,13 +103,13 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
               return;
             }
 
-            console.log(this.torrentFile.type);
-            //Check file size
-            /*if(this.torrentFile.type != "torrent"){
-              this.torrentErrorMessage = "El archivo seleccionado debe tener formato .torrent";
-              this.torrentErrorFlag = true;
-              return;
-            }*/
+            const allowedTypes = [ "application/x-bittorrent"];
+            if(!allowedTypes.includes(this.torrentFile.type)){
+                this.torrentErrorMessage = "Formato del archivo no válido. Debe introducirse un .torrent";
+                this.torrentErrorFlag = true;
+                this.torrentFile = null;
+                return;
+            }
 
             const req = new XMLHttpRequest();
             const formData = new FormData(); //Object that allows us send the data using XMLHttpRequest
@@ -122,6 +122,7 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
             }else{
               this.torrentErrorMessage = "El archivo que se quiere descargar no es correcto";
               this.torrentErrorFlag = true;
+              this.torrentFile = null;
               return;
             }
       },
@@ -140,6 +141,7 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
             if(this.file.size > 1000000){
               this.fileErrorMessage = "No es posible subir archivo de un tamaño superior a 1MB";
               this.fileErrorFlag = true;
+              this.file = null;
               return;
             }
 
@@ -149,8 +151,11 @@ import { Server_url_prefix, Server_port } from '../variables/variables'
             req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/create",false);
             req.send(formData);
 
-            if (req.status == 200) {
-              console.log(req.response);
+            if (req.status != 200) {
+              this.fileErrorMessage = "Se ha producido un error en el procesamiento de la petición";
+              this.fileErrorFlag = true;
+              this.file = null;
+              return;
             }
       },
     }

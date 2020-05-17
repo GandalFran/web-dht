@@ -158,50 +158,6 @@
           }
         }
 
-        this.intervalRetreaving();
-      }
-    },
-    methods: {
-      onDeleteClick(item) {
-        console.log('click on ' + item.nombre);
-        const req = new XMLHttpRequest();
-        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/delete",false);
-        req.send(JSON.stringify({id: item.id}));
-        console.log({id: item.id})
-        console.log("He enviado petición para eliminar");
-        if (req.status == 200 && req.response == true) { // Here delete from downloaded files
-          console.log("He recibido confirmación");
-          let pos = -1;
-          for(var i=0; i < this.filesUploaded.length ; i++){
-            if(this.filesUploaded[i].id == item.id){
-              pos = i;
-              break;
-            }
-          }
-          this.filesUploaded.slice(pos,1);
-        }
-      },
-      onDownloadClick(item){
-        console.log('click on ' + item.name);
-        const req = new XMLHttpRequest();
-        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/torrent",false);
-        req.send(JSON.stringify({id: item.id}));
-        console.log({id: item.id})
-        console.log("He enviado petición para eliminar");
-        if (req.status == 200) { // Here delete from downloaded files
-          console.log("He recibido confirmación");
-          console.log(req.response);
-
-          //Create link for download
-          const url = window.URL.createObjectURL(new Blob([req.response]))
-          const link = document.createElement('a')
-          link.href = url
-          link.setAttribute('download', `${item.name}.torrent`) //or any other extension
-          document.body.appendChild(link)
-          link.click()
-        }
-      },
-      intervalRetreaving(){
         const files = this.files
         const filesUploaded = this.filesUploaded
         setInterval(function(){
@@ -272,6 +228,47 @@
           }
         },2000);
       }
+    },
+    methods: {
+      onDeleteClick(item) {
+        console.log('click on ' + item.nombre);
+        const req = new XMLHttpRequest();
+        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/delete",false);
+        req.send(JSON.stringify({id: item.id}));
+        console.log({id: item.id})
+        console.log("He enviado petición para eliminar");
+        if (req.status == 200 && req.response == true) { // Here delete from downloaded files
+          console.log("He recibido confirmación");
+          let pos = -1;
+          for(var i=0; i < this.filesUploaded.length ; i++){
+            if(this.filesUploaded[i].id == item.id){
+              pos = i;
+              break;
+            }
+          }
+          this.filesUploaded.slice(pos,1);
+        }
+      },
+      onDownloadClick(item){
+        console.log('click on ' + item.name);
+        const req = new XMLHttpRequest();
+        req.open('POST',Server_url_prefix + ":" + Server_port + "/upload/torrent",false);
+        req.send(JSON.stringify({id: item.id}));
+        console.log({id: item.id})
+        console.log("He enviado petición para eliminar");
+        if (req.status == 200) { // Here delete from downloaded files
+          console.log("He recibido confirmación");
+          console.log(req.response);
+
+          //Create link for download
+          const url = window.URL.createObjectURL(new Blob([req.response]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', `${item.name}.torrent`) //or any other extension
+          document.body.appendChild(link)
+          link.click()
+        }
+      },
     }
   }
 </script>
