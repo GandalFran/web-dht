@@ -52,6 +52,13 @@ clean_file(){
 }
 
 # deploy utils
+build_web(){
+	cd $web_folder
+	npm install
+	npm audit fix
+	npm run build
+	cd $_deploy_folder
+}
 
 build_server_config(){
 	peer=$1
@@ -65,6 +72,9 @@ build_server_config(){
 deploy_one_machine(){
 	user_host=$1
 	bootstrap_peer=$2
+
+	# install pm2
+	remote_exec $user_host "npm install -g pm2"
 
 	# prepare folder
 	echo "preparing folders ..."
@@ -122,11 +132,11 @@ do
         	echo -e "\t-h help"
         	echo -e "EXAMPLES"
         	echo -e "\t- generate SSH key and export sessions"
-        	echo -e "\t\tbash deployer.bash -genkey -newsession user vm1"
+        	echo -e "\t\tbash deploy.bash -genkey -newsession user vm1"
         	echo -e "\t- deploy all"
-        	echo -e "\t\tbash deployer.bash -deploy user vm1 vm2 vm3"
+        	echo -e "\t\tbash deploy.bash -deploy user vm1 vm2 vm3"
         	echo -e "\t- clean current deploy"
-        	echo -e "\t\tbash deployer.bash -clean user vm1 vm2 vm3"
+        	echo -e "\t\tbash deploy.bash -clean user vm1 vm2 vm3"
       ;;
       "-genkey")
 			gen_key
@@ -160,6 +170,9 @@ do
 			user_host1="$user@$host1"
 			user_host2="$user@$host2"
 			user_host3="$user@$host3"
+
+			# install web required modules
+			build_web
 
 			# deploy in each host
 			echo "deploying on $host1 ..."
