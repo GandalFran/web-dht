@@ -126,6 +126,9 @@ var Downloads = /** @class */ (function () {
      */
     Downloads.prototype.delete = function (id) {
         try {
+            var download = this.get(id);
+            download.torrent.file.delete();
+            download.torrent.delete();
             delete this.model[id];
         }
         catch (error) {

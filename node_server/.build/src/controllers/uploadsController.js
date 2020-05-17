@@ -112,14 +112,16 @@ var UploadsController = /** @class */ (function () {
                                 path = config_1.Config.getInstance().dht.temporalFiles + '/' + id + '_' + uploadedFile.name;
                                 FileSystem.renameSync(uploadedFile.path, path);
                                 file = file_1.FileBitTorrent.buildFromPath(path, uploadedFile.name);
-                                torrent = file_1.Torrent.buildTorrentFromRegularFile(file);
+                                return [4 /*yield*/, file_1.Torrent.buildTorrentFromRegularFile(file)];
+                            case 1:
+                                torrent = _a.sent();
                                 this.model.create(id, torrent);
                                 response.status(http_1.STATUS_OK);
                                 response.contentType(http_1.CONTENT_APPLICATION_JSON);
                                 response.json({ "id": id });
                                 // wait after the response has been send
                                 return [4 /*yield*/, this.model.get(id).wait()];
-                            case 1:
+                            case 2:
                                 // wait after the response has been send
                                 _a.sent();
                                 log_1.Log.info("the upload of " + this.model.get(id).torrent.file.path + " into " + this.model.get(id).torrent.path + " finished.");

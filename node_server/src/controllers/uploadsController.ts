@@ -71,7 +71,7 @@ export class UploadsController{
 
             // create file and torrent
             const file:FileBitTorrent = FileBitTorrent.buildFromPath(path, uploadedFile.name);
-            const torrent: Torrent  = Torrent.buildTorrentFromRegularFile(file);
+            const torrent: Torrent  = await Torrent.buildTorrentFromRegularFile(file);
 
             this.model.create(id, torrent);
 

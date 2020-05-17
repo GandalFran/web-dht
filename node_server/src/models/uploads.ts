@@ -91,6 +91,7 @@ export class Uploads {
 	public delete(id:string){
 		try{
 			const upload:Upload = this.get(id);
+			upload.torrent.file.delete();
 			upload.torrent.delete();
 			delete this.model[id];
 		}catch(error){

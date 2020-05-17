@@ -111,11 +111,15 @@ var FileBitTorrent = /** @class */ (function () {
         }
         // generate chunks
         for (var i = 0; i < this.content.length; i += chunkSize) {
-            var chunkEnd = (i + chunkSize > this.content.length) ? (this.content.length) : (i + chunkSize);
+            var chunkEnd = ((i + chunkSize) > this.content.length) ? (this.content.length) : (i + chunkSize);
             var bufferChunk = this.content.slice(i, chunkEnd);
             var chunk = chunk_1.Chunk.buildWithValue(bufferChunk);
             chunks.push(chunk);
         }
+        console.log("[split] generated " + chunks.length + " chunks");
+        chunks.forEach(function (chunk) {
+            console.log("[split] chunk (" + chunk.value.length + ") -> " + chunk.value.toString('base64'));
+        });
         return chunks;
     };
     /**
@@ -127,6 +131,10 @@ var FileBitTorrent = /** @class */ (function () {
             bufferChunks.push(chunk.value);
         });
         this.content = Buffer.concat(bufferChunks);
+        console.log("[join] joined " + bufferChunks.length + " chunks");
+        chunks.forEach(function (chunk) {
+            console.log("[split] chunk " + chunk.cid.toString('base64') + " (" + chunk.value.length + ") -> " + chunk.value.toString('base64') + " ");
+        });
     };
     /**
      * Reads the file content and loads it into the content attribute.
@@ -139,6 +147,12 @@ var FileBitTorrent = /** @class */ (function () {
      */
     FileBitTorrent.prototype.write = function () {
         FileSystem.writeFileSync(this.path, this.content);
+    };
+    /**
+     * Deletes the file.
+     */
+    FileBitTorrent.prototype.delete = function () {
+        FileSystem.unlinkSync(this.path);
     };
     return FileBitTorrent;
 }());
@@ -196,7 +210,7 @@ var Torrent = /** @class */ (function (_super) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var promises = [];
                         torrent.chunks.forEach(function (chunk) {
-                            if (!chunk.cid) {
+                            if (chunk.cid === null) {
                                 promises.push(chunk.store());
                             }
                         });
@@ -223,7 +237,7 @@ var Torrent = /** @class */ (function (_super) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var promises = [];
                         torrent.chunks.forEach(function (chunk) {
-                            if (!chunk.value) {
+                            if (chunk.value === null) {
                                 promises.push(chunk.resolve());
                             }
                         });

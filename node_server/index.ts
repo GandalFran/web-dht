@@ -44,47 +44,46 @@ process.on('SIGINT', async function (){
 import * as FileSystem from "fs";
 import { Chunk } from "./src/models/chunk";
 import { FileBitTorrent, Torrent } from "./src/models/file";
-import { Loads } from "./src/models/loads";
+import { Uploads, Upload } from "./src/models/uploads";
+import { Downloads, Download } from "./src/models/downloads";
 
 
-const fileName = 'video.mp4';
+const fileName = './test/imagen.jpg';
 
-if(Config.getInstance().dht.idIface === 'wifi0'){
+const uploads = new Uploads()
+setTimeout(async function(){
+	const path:string = fileName;
+	let torrentFile: Torrent = null;
+	
+	try{
+		console.error('creating torrent')
+		const id = uploads.id()
+		const file:FileBitTorrent = FileBitTorrent.buildFromPath(path, 'imagen.jpg');
+	    torrentFile = Torrent.buildTorrentFromRegularFile(file);
 
-	setTimeout(async function(){
-		const path:string = './test/' + fileName;
-		let torrentFile: Torrent = null;
-		
-		try{
-		    Log.debug(`Generating file ${path}`);
-			const file:FileBitTorrent = FileBitTorrent.buildFromPath(path);
-		    Log.debug(`Generating torrent for file ${path}`);
-		    torrentFile = Torrent.buildTorrentFromRegularFile(file);
+		console.error('uploading torrent')
+		uploads.create(id, torrentFile);
+		await uploads.get(id).wait();
+		FileSystem.renameSync(file.path, './test/original.imagen.jpg')		
+		FileSystem.renameSync(torrentFile.path, './test/prueba.torrent')	
+	}catch(error){
+		Log.error("[INDEX] buildTorrentFromFile", error);
+	}	
+}, 5000)
 
-			Loads.getUploadsInstace().createUpload("1", torrentFile);
-			await Loads.getUploadsInstace().wait("1");
-			console.error(`status completed ${Loads.getUploadsInstace().statusUploads("1")}`)
-			Loads.getUploadsInstace().delete("1");
-		}catch(error){
-			Log.error("[INDEX] buildTorrentFromFile", error);
-		}
-		
-		FileSystem.renameSync(torrentFile.path, './test/prueba.torrent')		
-	}, 5000)
 
-}else{
-	setTimeout(async function(){
-		const torrentPath:string = './test/pruebaVideo.torrent';
-		try{
-		   	Log.debug(`Reading torreng from torrent file ${torrentPath}`);
-		    const torrentFile2: Torrent = Torrent.buildTorrentFromTorrentFile(torrentPath);
-			Loads.getDownloadsInstance().createDownload("2", torrentFile2);
-			await Loads.getDownloadsInstance().wait("2");
-			console.error(`status completed ${Loads.getDownloadsInstance().statusDownloads("2")}`)
-			Loads.getDownloadsInstance().delete("2");
-		}catch(error){
-			Log.error("[INDEX] buildTorrentFromFile", error);
-		}
+const downloads = new Downloads()
+setTimeout(async function(){
+	const torrentPath:string = './test/prueba.torrent';
+	try{
+		const id = downloads.id()
+	    const torrentFile2: Torrent = Torrent.buildTorrentFromTorrentFile(torrentPath, './', 'descargada_');
+	    downloads.create(id, torrentFile2);
+	    await downloads.get(id).wait();
+	   	FileSystem.renameSync(torrentFile2.file.path, './test/descargada.imagen.jpg')		
+	}catch(error){
+		Log.error("[INDEX] buildTorrentFromFile", error);
+	}
 
-	}, 1580000)
-}*/
+}, 20000)
+*/

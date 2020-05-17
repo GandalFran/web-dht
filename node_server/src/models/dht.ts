@@ -7,7 +7,6 @@
 import * as OS from 'os';
 import BittorrentDHT = require('bittorrent-dht');
 
-
 import { Log } from '../log';
 import { Config } from '../config';
 import { Chunk } from '../models/chunk';

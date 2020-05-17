@@ -126,6 +126,9 @@ var Uploads = /** @class */ (function () {
      */
     Uploads.prototype.delete = function (id) {
         try {
+            var upload = this.get(id);
+            upload.torrent.file.delete();
+            upload.torrent.delete();
             delete this.model[id];
         }
         catch (error) {

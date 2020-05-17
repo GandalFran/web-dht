@@ -92,6 +92,7 @@ export class Downloads {
 		try{
 			const download:Download = this.get(id);
 			download.torrent.file.delete();
+			download.torrent.delete();
 			delete this.model[id];
 		}catch(error){
 		}
