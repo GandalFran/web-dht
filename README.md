@@ -1,4 +1,4 @@
-# DHT
+# Web DHT
 
 Implementation of a web torrent client using a DHT supported with Kademlia written in node.js and Typescript.
 
